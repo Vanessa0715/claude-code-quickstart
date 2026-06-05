@@ -5,226 +5,1025 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Claude Code 教學資源庫</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #f5f0eb; font-family: 'Georgia', 'Noto Serif TC', serif; color: #3d2e1e; min-height: 100vh; padding: 40px 16px 72px; }
-  .container { max-width: 860px; margin: 0 auto; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #f5f0eb; font-family: 'Georgia', 'Noto Serif TC', serif; color: #3d2e1e; min-height: 100vh; }
+a { color: inherit; text-decoration: none; }
 
-  h1 { text-align: center; font-size: 1.5rem; color: #8b7355; letter-spacing: 0.05em; margin-bottom: 8px; }
-  .subtitle { text-align: center; font-size: 0.85rem; color: #9e8a72; margin-bottom: 48px; font-family: 'Courier New', monospace; }
+.view { display: none; }
+.view.active { display: block; }
 
-  .section-label { font-size: 0.75rem; font-family: 'Courier New', monospace; letter-spacing: 0.15em; color: #b09a7e; border-bottom: 1px solid #d8ccbe; padding-bottom: 6px; margin-bottom: 24px; }
+/* ── HOME ─────────────────────────────────────── */
+.home-wrap { max-width: 860px; margin: 0 auto; padding: 44px 20px 80px; }
+h1.site-title { text-align: center; font-size: 1.5rem; color: #8b7355; letter-spacing: 0.05em; margin-bottom: 8px; }
+.site-sub { text-align: center; font-size: 0.84rem; color: #9e8a72; font-family: 'Courier New', monospace; margin-bottom: 44px; }
+.sec-label { font-size: 0.72rem; font-family: 'Courier New', monospace; letter-spacing: 0.15em; color: #b09a7e; border-bottom: 1px solid #d8ccbe; padding-bottom: 6px; margin-bottom: 22px; }
 
-  /* Course cards */
-  .courses { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
-  @media (max-width: 600px) { .courses { grid-template-columns: 1fr; } }
+.courses { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-bottom: 36px; }
+@media (max-width: 600px) { .courses { grid-template-columns: 1fr; } }
 
-  .course-card { background: #fff8f2; border: 1px solid #e0d4c4; border-radius: 12px; overflow: hidden; }
-  .course-header { padding: 16px 20px; }
-  .course-header.quickstart { background: #8b7355; color: #fff; }
-  .course-header.workshop { background: #5b6fb5; color: #fff; }
-  .course-title { font-size: 0.95rem; font-weight: bold; letter-spacing: 0.04em; margin-bottom: 4px; }
-  .course-meta { font-size: 0.75rem; opacity: 0.85; font-family: 'Courier New', monospace; }
+.course-card { background: #fff8f2; border: 1px solid #e0d4c4; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.course-hdr { padding: 16px 20px; }
+.course-hdr.qs { background: #8b7355; }
+.course-hdr.ws { background: #5b6fb5; }
+.course-hdr-title { font-size: 0.95rem; font-weight: bold; color: #fff; letter-spacing: 0.03em; margin-bottom: 3px; }
+.course-hdr-meta { font-size: 0.73rem; color: rgba(255,255,255,0.8); font-family: 'Courier New', monospace; }
 
-  .chapter { display: flex; align-items: flex-start; gap: 12px; padding: 12px 18px; border-bottom: 1px solid #ede4d8; }
-  .chapter:last-child { border-bottom: none; }
-  .ch-num { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-family: 'Courier New', monospace; font-weight: bold; flex-shrink: 0; margin-top: 2px; }
-  .ch-num.brown { background: #e8ddd0; color: #6b4f2e; }
-  .ch-num.blue { background: #dde3f5; color: #3a4a8a; }
-  .ch-title { font-size: 0.86rem; color: #3d2e1e; font-weight: bold; margin-bottom: 2px; }
-  .ch-desc { font-size: 0.78rem; color: #9e8a72; line-height: 1.5; }
-  .ch-time { font-size: 0.7rem; font-family: 'Courier New', monospace; color: #c9b99a; margin-top: 3px; }
+.ch-row { display: flex; align-items: center; gap: 11px; padding: 11px 16px; border-bottom: 1px solid #ede4d8; cursor: pointer; transition: background 0.13s; }
+.ch-row:last-child { border-bottom: none; }
+.ch-row:hover { background: #f0e8de; }
+.ch-num { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-family: 'Courier New', monospace; font-weight: bold; flex-shrink: 0; }
+.ch-num.br { background: #e8ddd0; color: #6b4f2e; }
+.ch-num.bl { background: #dde3f5; color: #3a4a8a; }
+.ch-row-body { flex: 1; min-width: 0; }
+.ch-row-title { font-size: 0.85rem; font-weight: bold; color: #3d2e1e; margin-bottom: 2px; }
+.ch-row-desc { font-size: 0.76rem; color: #9e8a72; line-height: 1.45; }
+.ch-row-time { font-size: 0.67rem; font-family: 'Courier New', monospace; color: #c9b99a; margin-top: 2px; }
+.ch-arrow { color: #d0c0ad; font-size: 0.85rem; flex-shrink: 0; opacity: 0; transition: opacity 0.13s; }
+.ch-row:hover .ch-arrow { opacity: 1; }
 
-  /* Prerequisites */
-  .block { background: #fff8f2; border: 1px solid #e0d4c4; border-radius: 12px; padding: 22px 26px; margin-bottom: 28px; }
+.block { background: #fff8f2; border: 1px solid #e0d4c4; border-radius: 12px; padding: 20px 24px; margin-bottom: 26px; }
 
-  .prereq-list { list-style: none; margin-top: 14px; }
-  .prereq-list li { display: flex; gap: 10px; padding: 7px 0; font-size: 0.86rem; line-height: 1.6; border-bottom: 1px solid #ede4d8; }
-  .prereq-list li:last-child { border-bottom: none; }
-  .prereq-list li::before { content: '□'; font-size: 1rem; color: #c9b99a; flex-shrink: 0; }
-  .prereq-list a { color: #8b7355; }
-  .prereq-note { font-size: 0.78rem; color: #9e8a72; margin-top: 14px; font-style: italic; line-height: 1.6; padding-top: 12px; border-top: 1px solid #ede4d8; }
+.demo-block { background: #fff8f2; border: 1px solid #e0d4c4; border-left: 3px solid #5b6fb5; border-radius: 12px; padding: 20px 22px; margin-bottom: 26px; display: flex; gap: 14px; }
+.demo-icon { font-size: 1.7rem; flex-shrink: 0; line-height: 1.1; }
+.demo-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 6px; }
+.demo-body { font-size: 0.83rem; line-height: 1.8; }
+.demo-cmd { background: #edf0fa; border-radius: 7px; padding: 9px 13px; font-family: 'Courier New', monospace; font-size: 0.78rem; color: #3a4a8a; line-height: 1.65; margin: 9px 0; }
+.demo-note { font-size: 0.76rem; color: #c9b99a; font-style: italic; margin-top: 7px; }
 
-  /* How to use */
-  .howto-steps { margin-top: 14px; }
-  .howto-step { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
-  .howto-step:last-child { margin-bottom: 0; }
-  .step-badge { background: #e8ddd0; color: #6b4f2e; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-family: 'Courier New', monospace; font-weight: bold; flex-shrink: 0; margin-top: 2px; }
-  .howto-text { font-size: 0.86rem; line-height: 1.65; color: #3d2e1e; }
-  .howto-text code { background: #e8ddd0; padding: 1px 6px; border-radius: 3px; font-size: 0.8rem; color: #6b4f2e; font-family: 'Courier New', monospace; }
-  .howto-text .note { display: block; font-size: 0.77rem; color: #9e8a72; margin-top: 3px; font-style: italic; }
+.prereq-list { list-style: none; margin-top: 12px; }
+.prereq-list li { display: flex; gap: 9px; padding: 7px 0; font-size: 0.85rem; line-height: 1.6; border-bottom: 1px solid #ede4d8; align-items: flex-start; }
+.prereq-list li:last-child { border-bottom: none; }
+.prereq-list li::before { content: '□'; color: #c9b99a; flex-shrink: 0; }
+.prereq-list a { color: #8b7355; text-decoration: underline; }
+.prereq-note { font-size: 0.77rem; color: #9e8a72; margin-top: 12px; font-style: italic; line-height: 1.6; padding-top: 11px; border-top: 1px solid #ede4d8; }
 
-  /* Resource link */
-  .resource-link { text-align: center; margin-top: 8px; }
-  .resource-link a { display: inline-block; background: #fff8f2; border: 1px solid #c9b99a; border-radius: 8px; padding: 11px 24px; font-size: 0.83rem; color: #8b7355; text-decoration: none; font-family: 'Courier New', monospace; letter-spacing: 0.04em; }
-  .resource-link a:hover { background: #f0e8de; border-color: #8b7355; }
+.step-row { display: flex; gap: 11px; margin-bottom: 13px; align-items: flex-start; }
+.step-badge { background: #e8ddd0; color: #6b4f2e; width: 23px; height: 23px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-family: 'Courier New', monospace; font-weight: bold; flex-shrink: 0; margin-top: 2px; }
+.step-text { font-size: 0.85rem; line-height: 1.65; }
+.step-text code { background: #e8ddd0; padding: 1px 6px; border-radius: 3px; font-size: 0.78rem; color: #6b4f2e; font-family: 'Courier New', monospace; }
+.step-note { display: block; font-size: 0.76rem; color: #9e8a72; margin-top: 3px; font-style: italic; }
+
+.res-links { display: flex; flex-direction: column; gap: 9px; }
+.res-link { display: block; background: #fff8f2; border: 1px solid #c9b99a; border-radius: 8px; padding: 10px 18px; font-size: 0.81rem; color: #8b7355; font-family: 'Courier New', monospace; text-align: center; transition: background 0.13s; }
+.res-link:hover { background: #f0e8de; border-color: #8b7355; }
+.res-link.feat { background: #5b6fb5; color: #fff; border-color: #5b6fb5; }
+.res-link.feat:hover { background: #4a5ea0; }
+
+.why-text { font-size: 0.87rem; line-height: 1.85; }
+.why-text p + p { margin-top: 13px; }
+.why-text .hi { padding-top: 13px; margin-top: 13px; border-top: 1px solid #ede4d8; font-weight: bold; }
+
+/* ── CHAPTER VIEWS ──────────────────────────────── */
+.bc-bar { position: sticky; top: 0; z-index: 100; background: rgba(245,240,235,0.96); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid #d8ccbe; padding: 9px 20px; display: flex; align-items: center; gap: 6px; font-size: 0.78rem; font-family: 'Courier New', monospace; }
+.bc-home { color: #8b7355; cursor: pointer; }
+.bc-home:hover { text-decoration: underline; }
+.bc-sep { color: #c9b99a; }
+.bc-course { color: #9e8a72; }
+.bc-cur { color: #3d2e1e; font-weight: bold; }
+
+.ch-wrap { max-width: 720px; margin: 0 auto; padding: 34px 20px 80px; }
+
+.ch-hdr { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; padding-bottom: 18px; border-bottom: 1px solid #e0d4c4; }
+.ch-num-lg { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-family: 'Courier New', monospace; font-weight: bold; flex-shrink: 0; }
+.ch-num-lg.br { background: #e8ddd0; color: #6b4f2e; }
+.ch-num-lg.bl { background: #dde3f5; color: #3a4a8a; }
+.ch-hdr-title { font-size: 1.3rem; margin-bottom: 4px; }
+.ch-hdr-meta { font-size: 0.74rem; font-family: 'Courier New', monospace; color: #9e8a72; }
+
+/* content typography */
+.cc h2 { font-size: 1.03rem; color: #3d2e1e; margin: 30px 0 11px; padding-bottom: 6px; border-bottom: 1px solid #ede4d8; }
+.cc h3 { font-size: 0.94rem; color: #5a3e28; margin: 20px 0 7px; }
+.cc h4 { font-size: 0.87rem; color: #6b4f2e; margin: 16px 0 5px; }
+.cc p { font-size: 0.86rem; line-height: 1.85; margin: 8px 0; }
+.cc ul,.cc ol { padding-left: 20px; margin: 8px 0; }
+.cc li { font-size: 0.86rem; line-height: 1.85; margin: 3px 0; }
+.cc pre { background: #e8ddd0; border-radius: 8px; padding: 13px 16px; overflow-x: auto; margin: 13px 0; }
+.cc pre code { font-family: 'Courier New', monospace; font-size: 0.79rem; line-height: 1.7; color: #3d2e1e; background: none; padding: 0; border-radius: 0; }
+.cc code { background: #e8ddd0; padding: 1px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.79rem; color: #6b4f2e; }
+.cc blockquote { border-left: 3px solid #c9b99a; margin: 14px 0; padding: 9px 15px; background: #fff8f2; border-radius: 0 8px 8px 0; }
+.cc blockquote p { margin: 4px 0; }
+.cc table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 0.82rem; }
+.cc th { background: #e8ddd0; color: #6b4f2e; padding: 7px 11px; text-align: left; border: 1px solid #d8ccbe; }
+.cc td { padding: 7px 11px; border: 1px solid #e0d4c4; line-height: 1.6; }
+.cc hr { border: none; border-top: 1px solid #e0d4c4; margin: 26px 0; }
+.cc .notice { background: #fff8f2; border: 1px solid #e0d4c4; border-left: 3px solid #c9b99a; border-radius: 0 8px 8px 0; padding: 11px 15px; margin: 14px 0; font-size: 0.83rem; line-height: 1.7; }
+.cc .checklist { list-style: none; padding: 0; }
+.cc .checklist li::before { content: '✅ '; }
+.cc .tag-demo { background: #5b6fb5; color: #fff; font-size: 0.6rem; padding: 2px 7px; border-radius: 10px; font-family: 'Courier New', monospace; vertical-align: middle; margin-left: 6px; }
+
+.ch-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 46px; padding-top: 22px; border-top: 1px solid #e0d4c4; gap: 12px; flex-wrap: wrap; }
+.nav-btn { display: inline-flex; align-items: center; gap: 5px; padding: 9px 17px; border-radius: 8px; font-size: 0.82rem; font-family: 'Courier New', monospace; cursor: pointer; border: 1px solid #d8ccbe; background: #fff8f2; color: #6b4f2e; transition: background 0.13s; }
+.nav-btn:hover { background: #f0e8de; border-color: #8b7355; }
+.nav-btn.qs { background: #8b7355; color: #fff; border-color: #8b7355; }
+.nav-btn.qs:hover { background: #7a6248; }
+.nav-btn.ws { background: #5b6fb5; color: #fff; border-color: #5b6fb5; }
+.nav-btn.ws:hover { background: #4a5ea0; }
 </style>
 </head>
 <body>
-<div class="container">
 
-  <h1>Claude Code 教學資源庫</h1>
-  <p class="subtitle">── 從安裝到客製化，兩套教材帶你學完 ──</p>
+<!-- ════════════════════════════════════════════ -->
+<!--  HOME                                        -->
+<!-- ════════════════════════════════════════════ -->
+<div id="view-home" class="view active">
+<div class="home-wrap">
 
-  <div class="resource-link" style="margin-bottom: 36px;">
-    <a href="quickstart/01-install/claude-ai-vs-vscode.html" target="_blank">↗ 第一次用？先看 Claude 桌面版 vs VS Code 架構比較</a>
-  </div>
+  <h1 class="site-title">Claude Code 教學資源庫</h1>
+  <p class="site-sub">── 從安裝到客製化，兩套教材帶你學完 ──</p>
 
-  <div class="section-label">━━ 課程地圖 ━━</div>
+  <div class="sec-label">━━ 課程地圖 ━━</div>
   <div class="courses">
 
     <div class="course-card">
-      <div class="course-header quickstart">
-        <div class="course-title">教材一：快速入門</div>
-        <div class="course-meta">⏱ 約 60 分鐘 · 給第一次使用的人</div>
+      <div class="course-hdr qs">
+        <div class="course-hdr-title">教材一：快速入門</div>
+        <div class="course-hdr-meta">⏱ 約 60 分鐘 · 給第一次使用的人</div>
       </div>
-      <div class="chapter">
-        <div class="ch-num brown">1</div>
-        <div>
-          <div class="ch-title">安裝設定</div>
-          <div class="ch-desc">裝好 VS Code、帳號、Extension，確認可以登入</div>
-          <div class="ch-time">10 min</div>
+      <div class="ch-row" onclick="nav('view-q1')">
+        <div class="ch-num br">1</div>
+        <div class="ch-row-body">
+          <div class="ch-row-title">安裝設定</div>
+          <div class="ch-row-desc">裝好 VS Code、帳號、Extension，確認可以登入</div>
+          <div class="ch-row-time">10 min</div>
         </div>
+        <span class="ch-arrow">›</span>
       </div>
-      <div class="chapter">
-        <div class="ch-num brown">2</div>
-        <div>
-          <div class="ch-title">第一次對話</div>
-          <div class="ch-desc">問問題、整理文字、用 @ 引用檔案</div>
-          <div class="ch-time">10 min</div>
+      <div class="ch-row" onclick="nav('view-q2')">
+        <div class="ch-num br">2</div>
+        <div class="ch-row-body">
+          <div class="ch-row-title">第一次對話</div>
+          <div class="ch-row-desc">問問題、整理文字、用 @ 引用檔案</div>
+          <div class="ch-row-time">10 min</div>
         </div>
+        <span class="ch-arrow">›</span>
       </div>
-      <div class="chapter">
-        <div class="ch-num brown">3</div>
-        <div>
-          <div class="ch-title">幫我修程式</div>
-          <div class="ch-desc">找 bug、讓 Claude 直接修改檔案（代理模式初體驗）</div>
-          <div class="ch-time">15 min</div>
+      <div class="ch-row" onclick="nav('view-q3')">
+        <div class="ch-num br">3</div>
+        <div class="ch-row-body">
+          <div class="ch-row-title">幫我修程式</div>
+          <div class="ch-row-desc">找 bug、讓 Claude 直接修改檔案（代理模式初體驗）</div>
+          <div class="ch-row-time">15 min</div>
         </div>
+        <span class="ch-arrow">›</span>
       </div>
-      <div class="chapter">
-        <div class="ch-num brown">4</div>
-        <div>
-          <div class="ch-title">幫我做東西</div>
-          <div class="ch-desc">從零開始讓 Claude 建一個小工具，練習迭代溝通</div>
-          <div class="ch-time">15 min</div>
+      <div class="ch-row" onclick="nav('view-q4')">
+        <div class="ch-num br">4</div>
+        <div class="ch-row-body">
+          <div class="ch-row-title">幫我做東西</div>
+          <div class="ch-row-desc">從零開始讓 Claude 建一個小工具，練習迭代溝通</div>
+          <div class="ch-row-time">15 min</div>
         </div>
+        <span class="ch-arrow">›</span>
       </div>
-      <div class="chapter">
-        <div class="ch-num brown">5</div>
-        <div>
-          <div class="ch-title">實用技巧</div>
-          <div class="ch-desc">問出好答案的方法、斜線指令、常見注意事項</div>
-          <div class="ch-time">10 min</div>
+      <div class="ch-row" onclick="nav('view-q5')">
+        <div class="ch-num br">5</div>
+        <div class="ch-row-body">
+          <div class="ch-row-title">實用技巧</div>
+          <div class="ch-row-desc">問出好答案的方法、斜線指令、常見注意事項</div>
+          <div class="ch-row-time">10 min</div>
         </div>
+        <span class="ch-arrow">›</span>
       </div>
     </div>
 
     <div class="course-card">
-      <div class="course-header workshop">
-        <div class="course-title">教材二：進階工作坊</div>
-        <div class="course-meta">⏱ 約 60–70 分鐘 · 客製化你的 Claude</div>
+      <div class="course-hdr ws">
+        <div class="course-hdr-title">教材二：進階工作坊</div>
+        <div class="course-hdr-meta">⏱ 約 60–70 分鐘 · 客製化你的 Claude</div>
       </div>
-      <div class="chapter">
-        <div class="ch-num blue">1</div>
-        <div>
-          <div class="ch-title">CLAUDE.md</div>
-          <div class="ch-desc">寫一份讓 Claude 永遠記住你背景和習慣的設定檔</div>
-          <div class="ch-time">20 min</div>
+      <div class="ch-row" onclick="nav('view-w1')">
+        <div class="ch-num bl">1</div>
+        <div class="ch-row-body">
+          <div class="ch-row-title">CLAUDE.md</div>
+          <div class="ch-row-desc">寫一份讓 Claude 永遠記住你背景和習慣的設定檔</div>
+          <div class="ch-row-time">20 min</div>
         </div>
+        <span class="ch-arrow">›</span>
       </div>
-      <div class="chapter">
-        <div class="ch-num blue">2</div>
-        <div>
-          <div class="ch-title">Skills（快捷指令）</div>
-          <div class="ch-desc">建立 /指令，一鍵觸發你常用的 prompt</div>
-          <div class="ch-time">15 min</div>
+      <div class="ch-row" onclick="nav('view-w2')">
+        <div class="ch-num bl">2</div>
+        <div class="ch-row-body">
+          <div class="ch-row-title">Skills（快捷指令）</div>
+          <div class="ch-row-desc">建立 /指令，一鍵觸發你常用的 prompt</div>
+          <div class="ch-row-time">15 min</div>
         </div>
+        <span class="ch-arrow">›</span>
       </div>
-      <div class="chapter">
-        <div class="ch-num blue">3</div>
-        <div>
-          <div class="ch-title">MCP 整合</div>
-          <div class="ch-desc">把 Claude 接上 Notion、Google Calendar，讓它直接操作</div>
-          <div class="ch-time">15 min</div>
+      <div class="ch-row" onclick="nav('view-w3')">
+        <div class="ch-num bl">3</div>
+        <div class="ch-row-body">
+          <div class="ch-row-title">MCP 整合 <span style="background:#5b6fb5;color:#fff;font-size:0.6rem;padding:1px 6px;border-radius:9px;font-family:'Courier New',monospace;vertical-align:middle;">🎯 現場示範</span></div>
+          <div class="ch-row-desc">把 Claude 接上 Notion、Google Calendar，讓它直接操作</div>
+          <div class="ch-row-time">15 min + demo</div>
         </div>
+        <span class="ch-arrow">›</span>
       </div>
-      <div class="chapter">
-        <div class="ch-num blue">4</div>
-        <div>
-          <div class="ch-title">打包工具組合</div>
-          <div class="ch-desc">把你的設定整理成可分享、可備份的工作包</div>
-          <div class="ch-time">10 min</div>
+      <div class="ch-row" onclick="nav('view-w4')">
+        <div class="ch-num bl">4</div>
+        <div class="ch-row-body">
+          <div class="ch-row-title">打包工具組合</div>
+          <div class="ch-row-desc">把你的設定整理成可分享、可備份的工作包</div>
+          <div class="ch-row-time">10 min</div>
         </div>
+        <span class="ch-arrow">›</span>
       </div>
-      <div class="chapter">
-        <div class="ch-num blue">5</div>
-        <div>
-          <div class="ch-title">⚡ Firebase + GitHub Pages</div>
-          <div class="ch-desc">讓 Claude 做的網頁有雲端資料庫和真實可分享的網址</div>
-          <div class="ch-time">加碼自習</div>
+      <div class="ch-row" onclick="nav('view-w5')">
+        <div class="ch-num bl">5</div>
+        <div class="ch-row-body">
+          <div class="ch-row-title">⚡ Firebase + GitHub Pages</div>
+          <div class="ch-row-desc">讓 Claude 做的網頁有雲端資料庫和真實可分享的網址</div>
+          <div class="ch-row-time">加碼自習</div>
         </div>
+        <span class="ch-arrow">›</span>
       </div>
     </div>
 
+  </div><!-- /courses -->
+
+  <div class="sec-label">━━ 現場示範亮點 ━━</div>
+  <div class="demo-block">
+    <div class="demo-icon">📱</div>
+    <div>
+      <div class="demo-title">Dispatch：手機遠端控制桌面版 Claude</div>
+      <div class="demo-body">接在教材二第 3 章（MCP）之後示範。桌面版已連上 Google Drive MCP，拿出手機進入 Dispatch 模式：</div>
+      <div class="demo-cmd">「幫我把這個專案的說明文件<br>上傳到 Google Drive 的練習資料夾」</div>
+      <div class="demo-body">學員會看到桌面版 Claude 自動執行，完成後一起去 Google Drive 確認。<br>重點不是「上傳」本身，而是：<strong>MCP 給 Claude 工具，Dispatch 讓你遠端下指令，人不在電腦旁，工作照樣發生。</strong></div>
+      <div class="demo-note">⚠ 前置：桌面版保持開啟、手機與桌面版登入同一帳號</div>
+    </div>
   </div>
 
-  <div class="section-label">━━ 開始之前：確認環境 ━━</div>
+  <div class="sec-label">━━ 開始之前：確認環境 ━━</div>
   <div class="block">
     <ul class="prereq-list">
       <li>安裝 <strong>VS Code</strong>（免費）— <a href="https://code.visualstudio.com" target="_blank">code.visualstudio.com</a></li>
-      <li>準備 <strong>Claude Pro 帳號</strong>（約 NT$650／月）或 Anthropic API Key<br><span style="font-size:0.78rem;color:#9e8a72;">⚠ 免費帳號無法使用 Claude Code，登入後會看到升級提示</span></li>
-      <li>在 VS Code 安裝 <strong>Claude Code Extension</strong>（按 <code>Cmd+Shift+X</code>，搜尋「Claude Code」，選 Anthropic 出品那個）</li>
+      <li>準備 <strong>Claude Pro 帳號</strong>（約 NT$650／月）或 Anthropic API Key<br><span style="font-size:0.77rem;color:#9e8a72;">⚠ 免費帳號無法使用 Claude Code，登入後會看到升級提示</span></li>
+      <li>在 VS Code 安裝 <strong>Claude Code Extension</strong>（按 <code style="background:#e8ddd0;padding:1px 5px;border-radius:3px;font-family:'Courier New',monospace;font-size:0.78rem;color:#6b4f2e;">Cmd+Shift+X</code>，搜尋「Claude Code」，選 Anthropic 出品那個）</li>
     </ul>
-    <div class="prereq-note">環境不確定有沒有裝好？先從教材一第 1 章走一遍，確認登入成功再繼續。</div>
+    <div class="prereq-note">環境不確定有沒有裝好？先點「教材一 › 01 安裝設定」走一遍，確認登入成功再繼續。</div>
   </div>
 
-  <div class="section-label">━━ 怎麼使用這份教材 ━━</div>
+  <div class="sec-label">━━ 怎麼使用這份教材 ━━</div>
   <div class="block">
-    <div class="howto-steps">
-      <div class="howto-step">
-        <div class="step-badge">1</div>
-        <div class="howto-text">
-          用 VS Code 打開這個資料夾：<code>File → Open Folder</code>，選到 <code>claude-code-quickstart/</code>
-        </div>
+    <div class="step-row">
+      <div class="step-badge">1</div>
+      <div class="step-text">點上方課程地圖的章節，這頁會切換到該章的說明</div>
+    </div>
+    <div class="step-row">
+      <div class="step-badge">2</div>
+      <div class="step-text">
+        動手練習時，用 VS Code 打開對應的教材資料夾：<code>File → Open Folder</code>
+        <span class="step-note">進入進階工作坊時，必須改開 <code>workshop-vscode-claude/</code> 這個資料夾，Skills 的 /指令才能正確出現</span>
       </div>
-      <div class="howto-step">
-        <div class="step-badge">2</div>
-        <div class="howto-text">
-          從左側欄找到 <code>quickstart/01-install/README.md</code>，右鍵 → <code>Open Preview</code>（或按 <code>Cmd+Shift+V</code>）開啟排版好的預覽
-          <span class="note">看到一堆 # 和 ** 符號代表還沒開預覽，用上面的方法切換一下</span>
-        </div>
-      </div>
-      <div class="howto-step">
-        <div class="step-badge">3</div>
-        <div class="howto-text">
-          按章節順序走，每個資料夾裡的 <code>README.md</code> 就是該章的教學
-        </div>
-      </div>
-      <div class="howto-step">
-        <div class="step-badge">4</div>
-        <div class="howto-text">
-          進入進階工作坊時，切換資料夾：<code>File → Open Folder</code>，改選 <code>workshop-vscode-claude/</code>
-          <span class="note">必須切換資料夾，Skills 的 / 指令才能正確出現</span>
-        </div>
-      </div>
+    </div>
+    <div class="step-row">
+      <div class="step-badge">3</div>
+      <div class="step-text">每個資料夾裡的 <code>README.md</code> 是可帶回家自習的詳細步驟版</div>
     </div>
   </div>
 
-  <div class="section-label">━━ 參考資料 ━━</div>
-  <div class="resource-link" style="display:flex; flex-direction:column; gap:12px; align-items:center;">
-    <a href="quickstart/01-install/claude-ai-vs-vscode.html" target="_blank">↗ Claude.ai 網頁版 vs VS Code Claude Code — 整體差異比較</a>
-    <a href="workshop-vscode-claude/02-skills/architecture_comparison.html" target="_blank">↗ Claude.ai Skills vs Claude Code Commands — 架構比較</a>
-    <a href="my-workflow.html" target="_blank" style="background:#5b6fb5; color:#fff; border-color:#5b6fb5;">↗ Vanessa 的 Claude Code 應用地圖 — 真實專案 × 7 個場景</a>
+  <div class="sec-label">━━ 參考資料 ━━</div>
+  <div class="block">
+    <div class="res-links">
+      <a href="quickstart/01-install/claude-ai-vs-vscode.html" target="_blank" class="res-link">↗ Claude.ai 網頁版 vs VS Code Claude Code — 整體差異比較</a>
+      <a href="workshop-vscode-claude/02-skills/architecture_comparison.html" target="_blank" class="res-link">↗ Claude.ai Skills vs Claude Code Commands — 架構比較</a>
+      <a href="my-workflow.html" target="_blank" class="res-link feat">↗ Vanessa 的 Claude Code 應用地圖 — 真實專案 × 7 個場景</a>
+    </div>
   </div>
 
-  <div class="section-label" style="margin-top: 40px;">━━ 為什麼值得投資這些設定 ━━</div>
-  <div class="block" style="line-height: 1.85; font-size: 0.88rem; color: #3d2e1e;">
-    <p>CLAUDE.md、Skills 這些設定，不管你用桌面版 Code 模式還是 VS Code，都放在同一個專案資料夾裡、兩邊都能讀。你不需要選邊站。</p>
-    <p style="margin-top: 14px;">更值得記住的是一個概念：<strong>Portable（可攜帶性）</strong>。</p>
-    <p style="margin-top: 14px;">你的 CLAUDE.md 是文字檔，Skills 是文字檔，你累積的知識庫也是文字——這些東西存在你自己的電腦裡，不鎖在任何平台。如果哪天出現更強的 AI，把同一批文件接上新工具，一切照舊。</p>
-    <p style="margin-top: 14px; padding-top: 14px; border-top: 1px solid #ede4d8;"><strong>把心力投資在建立你的 CLAUDE.md 和 Skills，才是真正值得的事。AI 是工具，你的文件和知識才是資產。</strong></p>
+  <div class="sec-label">━━ 為什麼值得投資這些設定 ━━</div>
+  <div class="block">
+    <div class="why-text">
+      <p>CLAUDE.md、Skills 這些設定，不管你用桌面版 Code 模式還是 VS Code，都放在同一個專案資料夾裡、兩邊都能讀。你不需要選邊站。</p>
+      <p>更值得記住的是一個概念：<strong>Portable（可攜帶性）</strong>。</p>
+      <p>你的 CLAUDE.md 是文字檔，Skills 是文字檔，你累積的知識庫也是文字——這些東西存在你自己的電腦裡，不鎖在任何平台。如果哪天出現更強的 AI，把同一批文件接上新工具，一切照舊。</p>
+      <p class="hi">把心力投資在建立你的 CLAUDE.md 和 Skills，才是真正值得的事。AI 是工具，你的文件和知識才是資產。</p>
+    </div>
   </div>
 
 </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!--  Q1  安裝設定                                -->
+<!-- ════════════════════════════════════════════ -->
+<div id="view-q1" class="view">
+<div class="bc-bar">
+  <span class="bc-home" onclick="nav('view-home')">← 首頁</span>
+  <span class="bc-sep">›</span><span class="bc-course">教材一：快速入門</span>
+  <span class="bc-sep">›</span><span class="bc-cur">01 安裝設定</span>
+</div>
+<div class="ch-wrap">
+  <div class="ch-hdr">
+    <div class="ch-num-lg br">1</div>
+    <div><div class="ch-hdr-title">安裝設定</div><div class="ch-hdr-meta">教材一 · 約 10 分鐘</div></div>
+  </div>
+  <div class="cc">
+    <p>在開始之前，你需要準備三樣東西：VS Code、Claude 帳號、Claude Code extension。</p>
+    <div class="notice"><strong>已經用過 claude.ai 網頁版？</strong> 想知道 VS Code 的 Claude Code 和網頁版差在哪裡，先看這份比較圖：<a href="quickstart/01-install/claude-ai-vs-vscode.html" target="_blank" style="color:#8b7355;text-decoration:underline;">Claude.ai vs VS Code Claude Code ↗</a></div>
+    <div class="notice" style="margin-top:8px;"><strong>同時用桌面版 Claude 的 Code 模式？</strong> 好消息：兩個 client 讀同一個 <code>.claude/</code> 資料夾，CLAUDE.md、Skills、設定只要寫一次，兩邊都能用。</div>
+
+    <h2>Step 1：安裝 VS Code</h2>
+    <p>VS Code 是一個免費的程式編輯器，也是我們要用 Claude 的地方。</p>
+    <ol>
+      <li>前往 <a href="https://code.visualstudio.com" target="_blank" style="color:#8b7355;text-decoration:underline;">code.visualstudio.com</a></li>
+      <li>點「Download」，選你的作業系統（Mac / Windows）</li>
+      <li>安裝完成後打開 VS Code</li>
+    </ol>
+
+    <h2>Step 2：切換成中文介面（選做）</h2>
+    <ol>
+      <li>點左側欄的「擴充功能」圖示，或按 <code>Cmd+Shift+X</code>（Mac）/ <code>Ctrl+Shift+X</code>（Windows）</li>
+      <li>搜尋 <code>Chinese Traditional</code></li>
+      <li>找到「Chinese (Traditional) Language Pack」，點「Install」</li>
+      <li>右下角跳出提示，點「Change Language and Restart」</li>
+    </ol>
+    <blockquote><p>已經習慣英文介面？跳過這步也完全沒問題。</p></blockquote>
+
+    <h2>Step 3：準備 Claude 帳號</h2>
+    <ol>
+      <li>前往 <a href="https://claude.ai" target="_blank" style="color:#8b7355;text-decoration:underline;">claude.ai</a></li>
+      <li>點右上角「Sign up」，用 Google 帳號或 email 註冊</li>
+    </ol>
+    <blockquote>
+      <p><strong>關於費用：Claude Code 需要付費方案才能使用。</strong></p>
+      <ul>
+        <li><strong>Claude Pro</strong>（推薦）：每月約 $20 美元（約 NT$650），訂閱後直接用帳號登入，最省事。</li>
+        <li><strong>API Key</strong>：Anthropic 另外申請，按用量計費，適合開發者或用量大的人。</li>
+      </ul>
+      <p>免費帳號無法使用 Claude Code Extension，裝好後登入會看到升級提示。</p>
+    </blockquote>
+
+    <h2>Step 4：安裝 Claude Code Extension</h2>
+    <ol>
+      <li>打開 VS Code，點左側欄的「擴充功能」圖示（四個方塊），或按 <code>Cmd+Shift+X</code></li>
+      <li>搜尋 <code>Claude Code</code></li>
+      <li>找到 Anthropic 出品的那個，點「安裝」</li>
+      <li>安裝完成後，左側欄會出現 Claude 的圖示</li>
+    </ol>
+
+    <h2>Step 5：登入</h2>
+    <ol>
+      <li>點左側欄的 Claude 圖示</li>
+      <li>點「Sign in with claude.ai」</li>
+      <li>瀏覽器會開啟，允許授權即可</li>
+      <li>回到 VS Code，看到對話框出現就代表成功了</li>
+    </ol>
+
+    <h2>確認完成</h2>
+    <ul>
+      <li>VS Code 左側有 Claude 的圖示</li>
+      <li>點開後有一個可以輸入文字的對話框</li>
+    </ul>
+  </div>
+  <div class="ch-nav">
+    <button class="nav-btn" onclick="nav('view-home')">← 回首頁</button>
+    <button class="nav-btn qs" onclick="nav('view-q2')">下一章：第一次對話 →</button>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!--  Q2  第一次對話                              -->
+<!-- ════════════════════════════════════════════ -->
+<div id="view-q2" class="view">
+<div class="bc-bar">
+  <span class="bc-home" onclick="nav('view-home')">← 首頁</span>
+  <span class="bc-sep">›</span><span class="bc-course">教材一：快速入門</span>
+  <span class="bc-sep">›</span><span class="bc-cur">02 第一次對話</span>
+</div>
+<div class="ch-wrap">
+  <div class="ch-hdr">
+    <div class="ch-num-lg br">2</div>
+    <div><div class="ch-hdr-title">第一次對話</div><div class="ch-hdr-meta">教材一 · 約 10 分鐘</div></div>
+  </div>
+  <div class="cc">
+    <p>Claude 可以回答問題、整理文字、解釋東西。這一章先從最簡單的開始：<strong>讓它幫你整理一段亂掉的文字</strong>。</p>
+
+    <h2>認識介面</h2>
+    <p>打開 VS Code 左側的 Claude 面板，你會看到一個對話框。</p>
+    <ul>
+      <li>直接在底部輸入框打字，按 Enter 送出</li>
+      <li>Claude 會在上方顯示回覆</li>
+      <li>按 <code>+</code> 可以開新對話（清空記憶）</li>
+    </ul>
+
+    <h2>練習一：直接問問題</h2>
+    <p>在對話框裡輸入任何你好奇的問題，例如：</p>
+    <pre><code>什麼是程式語言？用一句話解釋給完全沒學過的人聽。</code></pre>
+    <p>送出後看看 Claude 怎麼回答。</p>
+
+    <h2>練習二：整理文字</h2>
+    <p>這個資料夾裡有一個 <code>sample.txt</code> 檔案，裡面是一份<strong>故意弄亂的工作清單</strong>。</p>
+    <ol>
+      <li>打開 <code>sample.txt</code>，全選（<code>Cmd+A</code> / <code>Ctrl+A</code>），複製</li>
+      <li>到 Claude 對話框，輸入：</li>
+    </ol>
+    <pre><code>幫我把以下這份清單整理成有條理的格式，依照類別分組：
+
+[貼上你複製的文字]</code></pre>
+
+    <h2>練習三：用 @ 直接把檔案丟給 Claude</h2>
+    <p>不用手動複製，Claude Code 有更快的方式：</p>
+    <ol>
+      <li>在 Claude 對話框輸入 <code>@</code></li>
+      <li>跳出選單，找到 <code>sample.txt</code> 並點選</li>
+      <li>補上你的問題：</li>
+    </ol>
+    <pre><code>@sample.txt 這個清單裡哪些事情有截止時間？幫我整理出來。</code></pre>
+    <p><code>@</code> 可以引用檔案、資料夾，甚至整個專案，是 Claude Code 裡最常用的技巧之一。</p>
+
+    <h2>兩種使用模式</h2>
+    <p>到目前為止你用的都是「<strong>對話模式</strong>」——你問，Claude 回答，文字只在聊天視窗裡。</p>
+    <p>Claude Code 還有另一種更強大的模式：「<strong>代理模式</strong>」——Claude 可以直接幫你讀寫電腦上的檔案、執行指令，不用你自己複製貼上。下一章就會用到。</p>
+  </div>
+  <div class="ch-nav">
+    <button class="nav-btn" onclick="nav('view-q1')">← 安裝設定</button>
+    <button class="nav-btn qs" onclick="nav('view-q3')">下一章：幫我修程式 →</button>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!--  Q3  幫我修程式                              -->
+<!-- ════════════════════════════════════════════ -->
+<div id="view-q3" class="view">
+<div class="bc-bar">
+  <span class="bc-home" onclick="nav('view-home')">← 首頁</span>
+  <span class="bc-sep">›</span><span class="bc-course">教材一：快速入門</span>
+  <span class="bc-sep">›</span><span class="bc-cur">03 幫我修程式</span>
+</div>
+<div class="ch-wrap">
+  <div class="ch-hdr">
+    <div class="ch-num-lg br">3</div>
+    <div><div class="ch-hdr-title">幫我修程式</div><div class="ch-hdr-meta">教材一 · 約 15 分鐘</div></div>
+  </div>
+  <div class="cc">
+    <p>這一章要讓 Claude 幫你看一段<strong>故意寫錯的程式碼</strong>，找出問題並修正。</p>
+    <p>不需要看懂程式碼，這正是重點：你不用懂，Claude 懂就好。</p>
+
+    <h2>準備</h2>
+    <p>打開這個資料夾裡的 <code>broken.py</code> 檔案，先滾動看一下，大概知道它在做什麼。（它是一個計算行銷活動費用的小程式，裡面藏了幾個錯誤。）</p>
+
+    <h2>練習一：讓 Claude 解釋這段程式碼</h2>
+    <ol>
+      <li>打開 <code>broken.py</code>，全選（<code>Cmd+A</code>）</li>
+      <li>按右鍵 → Ask Claude，或複製後貼到對話框</li>
+      <li>輸入：</li>
+    </ol>
+    <pre><code>這段程式碼在做什麼？用簡單的中文說明，不要用專業術語。</code></pre>
+
+    <h2>練習二：讓 Claude 找 bug</h2>
+    <pre><code>這段程式碼有沒有錯誤？幫我找出來並說明問題在哪裡。</code></pre>
+
+    <h2>練習三：讓 Claude 直接幫你改檔案</h2>
+    <p>這是 Claude Code 和一般 ChatGPT 最不一樣的地方：<strong>它可以直接修改你電腦上的檔案</strong>，不需要你自己複製貼上。</p>
+    <ol>
+      <li>確認 <code>broken.py</code> 已在 VS Code 裡打開</li>
+      <li>輸入：</li>
+    </ol>
+    <pre><code>@broken.py 這段程式碼有幾個錯誤，幫我直接修好它。</code></pre>
+    <ol start="3">
+      <li>Claude 會列出問題，並在畫面上顯示想做的修改（綠色/紅色標出差異）</li>
+      <li>確認後點「<strong>Accept</strong>」讓它直接套用到檔案</li>
+    </ol>
+    <blockquote><p><strong>這就是「代理模式」：</strong> Claude 不是給你答案讓你自己貼，而是直接動手做。適合任何「幫我改、幫我建、幫我刪」的任務。</p></blockquote>
+
+    <h2>小觀察</h2>
+    <p>注意 Claude 修改前會：先說明找到幾個問題 → 顯示 diff 預覽讓你看清楚 → 等你確認才執行。你隨時可以點「Reject」拒絕某個修改。</p>
+  </div>
+  <div class="ch-nav">
+    <button class="nav-btn" onclick="nav('view-q2')">← 第一次對話</button>
+    <button class="nav-btn qs" onclick="nav('view-q4')">下一章：幫我做東西 →</button>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!--  Q4  幫我做東西                              -->
+<!-- ════════════════════════════════════════════ -->
+<div id="view-q4" class="view">
+<div class="bc-bar">
+  <span class="bc-home" onclick="nav('view-home')">← 首頁</span>
+  <span class="bc-sep">›</span><span class="bc-course">教材一：快速入門</span>
+  <span class="bc-sep">›</span><span class="bc-cur">04 幫我做東西</span>
+</div>
+<div class="ch-wrap">
+  <div class="ch-hdr">
+    <div class="ch-num-lg br">4</div>
+    <div><div class="ch-hdr-title">幫我做東西</div><div class="ch-hdr-meta">教材一 · 約 15 分鐘</div></div>
+  </div>
+  <div class="cc">
+    <p>這一章是最有趣的部分：<strong>從零開始，讓 Claude 幫你做一個東西</strong>。你不需要知道怎麼寫，只要描述清楚你想要什麼。</p>
+
+    <h2>怎麼給 Claude 任務？</h2>
+    <p>好的 prompt 通常包含三件事：</p>
+    <ol>
+      <li><strong>你要做什麼</strong>（功能描述）</li>
+      <li><strong>限制條件</strong>（語言、格式、簡單或複雜）</li>
+      <li><strong>預期的結果</strong>（要輸出什麼）</li>
+    </ol>
+    <p>範例：</p>
+    <pre><code>幫我做一個單一 HTML 檔案的 webapp，功能是廠商比價記錄。
+可以輸入廠商名稱和報價，新增後顯示成表格，並自動標出最低價。
+版面要手機也能看清楚，不需要後端。</code></pre>
+
+    <h2>練習：挑一個任務試試看</h2>
+    <p>打開 <code>prompt-examples.md</code>，裡面有幾個可以直接使用的任務範本。挑一個你覺得有趣的，貼到 Claude 對話框，看它做出什麼。</p>
+
+    <h2>如果結果不對怎麼辦？</h2>
+    <p>直接繼續說就好，Claude 會根據你的回饋調整：</p>
+    <pre><code>這個方向對，但我希望輸出的格式改成清單，不要用表格。</code></pre>
+    <pre><code>這樣太複雜了，幫我簡化成三個步驟就好。</code></pre>
+    <pre><code>加上錯誤提示，如果使用者輸入空白要顯示警告。</code></pre>
+    <p>這種來回調整的過程叫做「迭代」，是使用 Claude 最重要的技巧。</p>
+  </div>
+  <div class="ch-nav">
+    <button class="nav-btn" onclick="nav('view-q3')">← 幫我修程式</button>
+    <button class="nav-btn qs" onclick="nav('view-q5')">下一章：實用技巧 →</button>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!--  Q5  實用技巧                                -->
+<!-- ════════════════════════════════════════════ -->
+<div id="view-q5" class="view">
+<div class="bc-bar">
+  <span class="bc-home" onclick="nav('view-home')">← 首頁</span>
+  <span class="bc-sep">›</span><span class="bc-course">教材一：快速入門</span>
+  <span class="bc-sep">›</span><span class="bc-cur">05 實用技巧</span>
+</div>
+<div class="ch-wrap">
+  <div class="ch-hdr">
+    <div class="ch-num-lg br">5</div>
+    <div><div class="ch-hdr-title">實用技巧</div><div class="ch-hdr-meta">教材一 · 約 10 分鐘</div></div>
+  </div>
+  <div class="cc">
+    <p>恭喜完成前四章！這裡整理一些讓 Claude 更好用的小技巧。</p>
+
+    <h2>問出好答案的關鍵</h2>
+    <p><strong>給的資訊越具體，答案越好用。</strong></p>
+    <table>
+      <tr><th>差的問法</th><th>好的問法</th></tr>
+      <tr><td><code>幫我寫一個程式</code></td><td>詳細說明功能、格式、限制、你的程度</td></tr>
+    </table>
+    <pre><code>幫我做一個單一 HTML 檔案的 webapp，功能是活動預算追蹤。
+可以輸入費用項目和金額，顯示已花費和剩餘預算，並用進度條視覺化。
+版面要手機也能看，資料用 localStorage 儲存，重新整理後不消失。</code></pre>
+
+    <p><strong>說清楚你是誰、程度如何。</strong></p>
+    <pre><code>我完全不會寫程式，幫我用最簡單的方式解釋...</code></pre>
+    <pre><code>我是行銷人員，不太懂技術，幫我用非技術的語言說明...</code></pre>
+
+    <p><strong>結果不好就繼續說，不用重新開始。</strong></p>
+    <pre><code>這個太複雜了，幫我再簡化一點。</code></pre>
+    <pre><code>可以加上繁體中文的說明嗎？</code></pre>
+
+    <h2>常用斜線指令</h2>
+    <p>在對話框輸入 <code>/</code> 就會看到可用指令：</p>
+    <table>
+      <tr><th>指令</th><th>功能</th></tr>
+      <tr><td><code>/help</code></td><td>查看所有指令</td></tr>
+      <tr><td><code>/clear</code></td><td>清空目前對話，重新開始</td></tr>
+    </table>
+
+    <h2>什麼時候開新對話？</h2>
+    <p>建議：<strong>換一個新主題就開新對話。</strong> 用左上角的 <code>+</code> 按鈕。話題太雜時容易讓 Claude 混淆。</p>
+
+    <h2>Claude 不是萬能的</h2>
+    <ul>
+      <li><strong>資訊有截止日期</strong>：問最新時事或股價要另外查證</li>
+      <li><strong>做出來要測試</strong>：Claude 給的 HTML 通常可用，但要在瀏覽器確認</li>
+      <li><strong>重要決定要確認</strong>：醫療、法律、財務只能參考，不能替代專業建議</li>
+    </ul>
+
+    <h2>你已經會的事</h2>
+    <ul class="checklist">
+      <li>在 VS Code 裡使用 Claude Code</li>
+      <li>用 Claude 整理和處理文字</li>
+      <li>讓 Claude 找 bug 和修程式</li>
+      <li>從零開始讓 Claude 建一個小工具</li>
+      <li>用迭代的方式調整 Claude 的輸出</li>
+    </ul>
+    <blockquote><p>想更進一步？試試教材二，學習怎麼把 Claude 設定成真正懂你的助理。</p></blockquote>
+  </div>
+  <div class="ch-nav">
+    <button class="nav-btn" onclick="nav('view-q4')">← 幫我做東西</button>
+    <button class="nav-btn ws" onclick="nav('view-w1')">進入教材二：進階工作坊 →</button>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!--  W1  CLAUDE.md                              -->
+<!-- ════════════════════════════════════════════ -->
+<div id="view-w1" class="view">
+<div class="bc-bar">
+  <span class="bc-home" onclick="nav('view-home')">← 首頁</span>
+  <span class="bc-sep">›</span><span class="bc-course">教材二：進階工作坊</span>
+  <span class="bc-sep">›</span><span class="bc-cur">01 CLAUDE.md</span>
+</div>
+<div class="ch-wrap">
+  <div class="ch-hdr">
+    <div class="ch-num-lg bl">1</div>
+    <div><div class="ch-hdr-title">CLAUDE.md：告訴 Claude 你是誰</div><div class="ch-hdr-meta">教材二 · 約 20 分鐘</div></div>
+  </div>
+  <div class="cc">
+    <blockquote>
+      <p>沒有 CLAUDE.md：每次對話 Claude 都把你當陌生人，什麼都要重新解釋。</p>
+      <p>有了 CLAUDE.md：Claude 一開口就知道你是行銷主管、習慣用繁體中文、不喜歡技術術語。</p>
+    </blockquote>
+
+    <h2>CLAUDE.md 是什麼？</h2>
+    <p>它就是一個純文字檔案，名字就叫 <code>CLAUDE.md</code>，放在你的專案資料夾裡。</p>
+    <p>Claude Code 在你每次打開對話時，會<strong>自動讀取這個檔案</strong>，把裡面的設定當作對話的前提。</p>
+    <p>你可以在裡面寫：</p>
+    <ul>
+      <li>你的職位和工作內容</li>
+      <li>你希望 Claude 用什麼語氣回答</li>
+      <li>你的團隊常用的術語或慣例</li>
+      <li>Claude 絕對不能做的事</li>
+    </ul>
+
+    <h2>步驟</h2>
+    <h3>Step 1：打開模板</h3>
+    <p>點開這個資料夾裡的 <code>my-claude-md/CLAUDE.md</code>，這是一份已經幫你準備好框架的模板。</p>
+    <h3>Step 2：填寫你的資料</h3>
+    <p>把模板裡用 <code>[ ]</code> 標示的部分換成你自己的資訊。不用寫得很完美，先有內容比較重要。</p>
+    <h3>Step 3：存檔</h3>
+    <p>按 <code>Cmd+S</code>（Mac）/ <code>Ctrl+S</code>（Windows）存檔。</p>
+    <h3>Step 4：測試</h3>
+    <pre><code>你好，根據我的 CLAUDE.md，你知道我是做什麼的嗎？請簡單介紹一下你對我的理解。</code></pre>
+    <p>如果 Claude 能正確描述你的背景，代表它已經讀到你的設定了。</p>
+
+    <h2>常見問題</h2>
+    <blockquote>
+      <p><strong>Q：CLAUDE.md 放哪裡？</strong><br>放在你「用 VS Code 打開的那個資料夾」的根目錄。比如打開的是 <code>my-project/</code>，就放在 <code>my-project/CLAUDE.md</code>。</p>
+      <p><strong>Q：可以有多個 CLAUDE.md 嗎？</strong><br>可以。不同專案有不同的 CLAUDE.md，Claude 會讀當前打開的那個。你也可以在家目錄放一個全域的。</p>
+      <p><strong>Q：裡面要用什麼語言寫？</strong><br>隨便，中文英文都可以。Claude 都看得懂。</p>
+    </blockquote>
+  </div>
+  <div class="ch-nav">
+    <button class="nav-btn" onclick="nav('view-home')">← 回首頁</button>
+    <button class="nav-btn ws" onclick="nav('view-w2')">下一章：Skills →</button>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!--  W2  Skills                                 -->
+<!-- ════════════════════════════════════════════ -->
+<div id="view-w2" class="view">
+<div class="bc-bar">
+  <span class="bc-home" onclick="nav('view-home')">← 首頁</span>
+  <span class="bc-sep">›</span><span class="bc-course">教材二：進階工作坊</span>
+  <span class="bc-sep">›</span><span class="bc-cur">02 Skills</span>
+</div>
+<div class="ch-wrap">
+  <div class="ch-hdr">
+    <div class="ch-num-lg bl">2</div>
+    <div><div class="ch-hdr-title">Skills：存下你的常用指令</div><div class="ch-hdr-meta">教材二 · 約 15 分鐘</div></div>
+  </div>
+  <div class="cc">
+    <blockquote>
+      <p>沒有 Skills：每次要請 Claude 整理今日工作清單，都要打一整段說明。</p>
+      <p>有了 Skills：輸入 <code>/daily-summary</code>，三秒鐘拿到清單。</p>
+    </blockquote>
+
+    <h2>Skills 是什麼？</h2>
+    <p>Skills 就是<strong>存好的 prompt 快捷鍵</strong>。</p>
+    <ul>
+      <li>每個 Skill 是一個 <code>.md</code> 檔案，放在 <code>.claude/commands/</code> 資料夾裡</li>
+      <li>檔名就是指令名稱（例如 <code>daily-summary.md</code> → 指令 <code>/daily-summary</code>）</li>
+      <li>在 Claude 對話框輸入 <code>/</code> 就可以看到所有可用的 Skills</li>
+    </ul>
+    <div class="notice"><strong>你可能注意到：</strong> Claude.ai 網頁版也有「Skills」，和這裡的 <code>.claude/commands/</code> 是不同層的東西——執行效果相同，但管理方式、作用範圍、能不能存取本地檔案都不一樣。想弄清楚差在哪裡，打開 <a href="workshop-vscode-claude/02-skills/architecture_comparison.html" target="_blank" style="color:#8b7355;text-decoration:underline;">architecture_comparison.html ↗</a>。</div>
+
+    <h2>Skills 有兩種層級</h2>
+    <table>
+      <tr><th>層級</th><th>存放位置</th><th>使用範圍</th></tr>
+      <tr><td>個人全域</td><td><code>~/.claude/commands/</code></td><td>你所有的專案都能用</td></tr>
+      <tr><td>專案專屬</td><td><code>你的專案/.claude/commands/</code></td><td>只在這個專案裡出現</td></tr>
+    </table>
+
+    <h2>動手做：執行現有的 Skill</h2>
+    <h3>Step 1：看看 Skill 長什麼樣</h3>
+    <p>打開 <code>.claude/commands/daily-summary.md</code>，看一下裡面寫了什麼。（它就是一段中文 prompt，沒有什麼神奇的語法。）</p>
+    <h3>Step 2：執行它</h3>
+    <pre><code>/daily-summary</code></pre>
+    <p>按 Enter，看看 Claude 怎麼回應。</p>
+    <h3>Step 3：試著回答 Claude 的問題</h3>
+    <p>Claude 可能會問你今天有哪些事，照實回答就好。</p>
+
+    <h2>動手做：建立你自己的 Skill</h2>
+    <h3>Step 1：想一個你很常用的 prompt</h3>
+    <ul>
+      <li>「幫我把這段文字翻譯成正式繁體中文」</li>
+      <li>「幫我寫一封道歉信，語氣要真誠但不要太肉麻」</li>
+      <li>「幫我整理這份會議記錄的重點和待辦事項」</li>
+    </ul>
+    <h3>Step 2：在 <code>.claude/commands/</code> 裡建立新檔案</h3>
+    <ol>
+      <li>在左側檔案欄，找到 <code>.claude/commands/</code> 資料夾</li>
+      <li>右鍵 → 新增檔案，檔名用英文，例如 <code>translate-formal.md</code></li>
+    </ol>
+    <div class="notice"><strong>找不到 <code>.claude</code> 資料夾？</strong> 它是隱藏資料夾（名稱以 <code>.</code> 開頭）。解法：在 VS Code 上方搜尋列輸入 <code>.claude/commands</code> 就能找到。</div>
+    <h3>Step 3：把你的 prompt 貼進去，存檔</h3>
+    <h3>Step 4：測試</h3>
+    <p>在 Claude 對話框輸入 <code>/translate-formal</code>（或你取的名字），確認出現了。</p>
+
+    <h2>小提示：<code>$ARGUMENTS</code></h2>
+    <p>Skill 裡面可以用 <code>$ARGUMENTS</code> 這個特殊符號，讓你在執行時傳入補充內容。</p>
+    <pre><code>幫我把以下文字翻譯成正式繁體中文：
+
+$ARGUMENTS</code></pre>
+    <p>執行時輸入：<code>/translate-formal 你要翻譯的文字</code>，Claude 就會把輸入的文字填到 <code>$ARGUMENTS</code> 的位置。</p>
+  </div>
+  <div class="ch-nav">
+    <button class="nav-btn" onclick="nav('view-w1')">← CLAUDE.md</button>
+    <button class="nav-btn ws" onclick="nav('view-w3')">下一章：MCP 整合 →</button>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!--  W3  MCP 整合                               -->
+<!-- ════════════════════════════════════════════ -->
+<div id="view-w3" class="view">
+<div class="bc-bar">
+  <span class="bc-home" onclick="nav('view-home')">← 首頁</span>
+  <span class="bc-sep">›</span><span class="bc-course">教材二：進階工作坊</span>
+  <span class="bc-sep">›</span><span class="bc-cur">03 MCP 整合</span>
+</div>
+<div class="ch-wrap">
+  <div class="ch-hdr">
+    <div class="ch-num-lg bl">3</div>
+    <div><div class="ch-hdr-title">MCP 整合 <span class="tag-demo">🎯 現場示範</span></div><div class="ch-hdr-meta">教材二 · 約 15 分鐘 + Dispatch demo</div></div>
+  </div>
+  <div class="cc">
+    <blockquote>
+      <p>沒有 MCP：「Claude，這是我 Notion 的會議記錄，請幫我整理…」（手動複製貼上）</p>
+      <p>有了 MCP：「幫我找上週四的會議記錄，整理出待辦事項」——Claude 自己去 Notion 找。</p>
+    </blockquote>
+
+    <h2>MCP 是什麼？</h2>
+    <p>MCP 全名是 <strong>Model Context Protocol</strong>，概念很簡單：</p>
+    <blockquote><p><strong>MCP = Claude 伸手拿東西的管道</strong></p></blockquote>
+    <p>平常 Claude 只能看你貼給它的文字。透過 MCP，Claude 可以主動連接其他應用程式，直接存取裡面的資料或執行操作。</p>
+    <pre><code>你說：「幫我整理 Notion 的會議記錄」
+         ↓
+Claude 透過 MCP 連進 Notion
+         ↓
+Claude 找到相關頁面，整理後回傳給你</code></pre>
+
+    <h2>方式一：Claude.ai 內建整合（比較簡單）</h2>
+    <ol>
+      <li>打開 Claude.ai → 點右上角頭像 → <strong>Settings</strong></li>
+      <li>點選 <strong>Integrations</strong>（整合）</li>
+      <li>找到 <strong>Notion</strong> 或 <strong>Google Calendar</strong>，點「Connect」</li>
+      <li>授權登入即可</li>
+    </ol>
+    <p><strong>連上後試試看：</strong></p>
+    <pre><code>幫我在 Notion 裡搜尋包含「行銷」關鍵字的頁面</code></pre>
+    <pre><code>我的 Google Calendar 今天有哪些行程？</code></pre>
+    <pre><code>幫我在 Google Calendar 新增一個明天下午三點、持續一小時的會議，名稱是「週報」</code></pre>
+
+    <h2>方式二：Claude Code 專案設定（進階）</h2>
+    <p>如果你想在特定專案裡使用 MCP，可以在專案的 <code>.claude/settings.json</code> 裡設定。打開 <code>examples/mcp-config.json</code> 看範例格式。</p>
+    <div class="notice"><strong>注意：</strong> 這個方式需要申請 API 金鑰，步驟比較多。建議先用方式一確認概念。</div>
+
+    <h2>現在可以試什麼？</h2>
+    <p><strong>Notion：</strong></p>
+    <ul>
+      <li><code>在 Notion 裡找「[你的某個頁面關鍵字]」並幫我摘要重點</code></li>
+      <li><code>幫我在 Notion 新增一個頁面，標題是「2026年下半年目標」，內容先留空</code></li>
+    </ul>
+    <p><strong>Google Calendar：</strong></p>
+    <ul>
+      <li><code>幫我看看這週有哪些行程</code></li>
+      <li><code>幫我在週五上午十點加一個「覆盤」的提醒，30分鐘</code></li>
+    </ul>
+
+    <h2>常見問題</h2>
+    <blockquote>
+      <p><strong>Q：MCP 安全嗎？Claude 看得到我所有 Notion 內容嗎？</strong><br>你授權哪個工作區，Claude 就只能存取那個範圍。建議用專門的「工作」帳號。</p>
+      <p><strong>Q：連上後不想用了怎麼辦？</strong><br>到 Claude.ai → Settings → Integrations，點「Disconnect」就斷開了。</p>
+      <p><strong>Q：支援哪些工具？</strong><br>Claude.ai 內建支援：Notion、Google Drive、Google Calendar。透過第三方 MCP，還可以接 GitHub、Jira、Slack 等。</p>
+    </blockquote>
+
+    <hr>
+
+    <h2>🌟 現場示範：Dispatch 遠端控制</h2>
+    <p>學完 MCP 之後，來試試把它和 <strong>Dispatch</strong> 結合——這是 Claude 桌面版的遠端連線功能，讓你用手機就能驅動桌面版 Claude 執行任務。</p>
+    <p><strong>情境：你離開電腦了，但想讓 Claude 幫你把資料整理好上傳</strong></p>
+    <ol>
+      <li>手機開 Claude app，用同一個帳號登入</li>
+      <li>進入 <strong>Dispatch 模式</strong>（遠端連線到桌面版）</li>
+      <li>對手機說：「幫我把這個專案的 README 上傳到 Google Drive 的『Claude 練習』資料夾」</li>
+      <li>看桌面版 Claude 自動執行，完成後到 Google Drive 確認</li>
+    </ol>
+    <blockquote>
+      <p><strong>MCP 賦予 Claude 工具（Google Drive）+ Dispatch 讓你遠端下指令 → 人不在電腦旁，工作照樣發生。</strong></p>
+      <p><em>注意：Dispatch 需要桌面版保持開啟，並且手機和桌面版登入同一帳號。</em></p>
+    </blockquote>
+  </div>
+  <div class="ch-nav">
+    <button class="nav-btn" onclick="nav('view-w2')">← Skills</button>
+    <button class="nav-btn ws" onclick="nav('view-w4')">下一章：打包工具組合 →</button>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!--  W4  打包工具組合                            -->
+<!-- ════════════════════════════════════════════ -->
+<div id="view-w4" class="view">
+<div class="bc-bar">
+  <span class="bc-home" onclick="nav('view-home')">← 首頁</span>
+  <span class="bc-sep">›</span><span class="bc-course">教材二：進階工作坊</span>
+  <span class="bc-sep">›</span><span class="bc-cur">04 打包工具組合</span>
+</div>
+<div class="ch-wrap">
+  <div class="ch-hdr">
+    <div class="ch-num-lg bl">4</div>
+    <div><div class="ch-hdr-title">打包你的工具組合</div><div class="ch-hdr-meta">教材二 · 約 10 分鐘</div></div>
+  </div>
+  <div class="cc">
+    <h2>概念：你的「Claude 工作包」</h2>
+    <p>你已經學了三個東西：<strong>CLAUDE.md</strong>（設定背景）、<strong>Skills</strong>（存下常用指令）、<strong>MCP</strong>（接上外部工具）。</p>
+    <p>這三樣合在一起，就是你的「Claude 工作包」——<strong>一個資料夾，裡面包含你客製化 Claude 所需的所有設定。</strong></p>
+    <pre><code>my-workspace/
+├── CLAUDE.md                    ← 你的設定
+└── .claude/
+    └── commands/                ← 你的 Skills
+        ├── daily-summary.md
+        └── translate-formal.md</code></pre>
+    <p>把這個資料夾分享給同事，他們放進自己的專案就能用了。換電腦時也只需要複製這個資料夾，設定立刻恢復。</p>
+
+    <h2>為什麼這很有用？</h2>
+    <h3>對個人來說</h3>
+    <p>你把自己的 CLAUDE.md + Skills 整理好，可以在換電腦、換專案時一鍵恢復你的整套設定。</p>
+    <h3>對團隊來說</h3>
+    <p>主管或技術人員做好一個工作包，全團隊複製後大家都有相同的工具和規範，不用每個人自己摸索。</p>
+
+    <h2>怎麼取得別人做好的工具包？</h2>
+    <h3>方法一：從 GitHub 複製</h3>
+    <table>
+      <tr><th>用途</th><th>搜尋關鍵字</th></tr>
+      <tr><td>專案管理</td><td><code>claude code mcp jira</code> / <code>claude code mcp linear</code></td></tr>
+      <tr><td>筆記整理</td><td><code>claude code mcp notion</code> / <code>claude code mcp obsidian</code></td></tr>
+      <tr><td>開發輔助</td><td><code>claude code mcp github</code> / <code>claude code mcp supabase</code></td></tr>
+      <tr><td>通訊整合</td><td><code>claude code mcp slack</code> / <code>claude code mcp gmail</code></td></tr>
+    </table>
+    <div class="notice"><strong>提示：</strong> 取得前確認來源可信賴。MCP 設定會有存取你工具的權限。</div>
+
+    <h3>方法二：安裝 VS Code Extension</h3>
+    <p>在 VS Code 按 <code>Cmd+Shift+X</code> → 搜尋 <code>claude code</code>，可以找到強化 Claude Code 功能的擴充功能。</p>
+    <div class="notice"><strong>注意：</strong> VS Code Extension 和 MCP / Skills 是<strong>不同層級</strong>的東西。Extension 是改 VS Code 本身的功能；MCP 和 Skills 是在 Claude Code 裡客製化 Claude 的行為。</div>
+
+    <h2>現在可以做的事</h2>
+    <ol>
+      <li>確認 CLAUDE.md 裡的內容是最新的</li>
+      <li>看看這幾天建的 Skills，把用不到的刪掉，常用的保留</li>
+      <li>把整個 <code>.claude/</code> 資料夾存一份備份，換電腦時直接複製過去</li>
+    </ol>
+
+    <h2>你現在已經知道的事</h2>
+    <ul class="checklist">
+      <li><strong>CLAUDE.md</strong> — Claude 的說明書，讓它了解你</li>
+      <li><strong>Skills</strong> — 你的個人快捷工具庫</li>
+      <li><strong>MCP</strong> — 橋接外部工具的管道</li>
+      <li><strong>工具包</strong> — 把以上三者打包分享的方式</li>
+    </ul>
+    <blockquote><p>這四個東西組合在一起，就是「客製化 AI 工作流程」的基礎。</p></blockquote>
+  </div>
+  <div class="ch-nav">
+    <button class="nav-btn" onclick="nav('view-w3')">← MCP 整合</button>
+    <button class="nav-btn ws" onclick="nav('view-w5')">加碼：Firebase + GitHub Pages →</button>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!--  W5  Firebase + GitHub Pages                -->
+<!-- ════════════════════════════════════════════ -->
+<div id="view-w5" class="view">
+<div class="bc-bar">
+  <span class="bc-home" onclick="nav('view-home')">← 首頁</span>
+  <span class="bc-sep">›</span><span class="bc-course">教材二：進階工作坊</span>
+  <span class="bc-sep">›</span><span class="bc-cur">05 ⚡ Firebase + GitHub Pages</span>
+</div>
+<div class="ch-wrap">
+  <div class="ch-hdr">
+    <div class="ch-num-lg bl">5</div>
+    <div><div class="ch-hdr-title">⚡ Firebase + GitHub Pages</div><div class="ch-hdr-meta">教材二 · 加碼自習</div></div>
+  </div>
+  <div class="cc">
+    <blockquote><p>這個章節教你把 Claude 做出來的網頁，變成一個<strong>真正可以用的工具</strong>：資料存在雲端、跨裝置同步、有自己的網址讓別人打開。</p></blockquote>
+
+    <h2>完整流程</h2>
+    <pre><code>Claude 幫你做出網頁（含 Firebase API）
+    ↓
+Firebase 存放資料（跨裝置同步，改了馬上看到）
+    ↓
+Git 追蹤版本 → GitHub 存放備份
+    ↓
+GitHub Pages 發布網址（任何人都能用瀏覽器開啟）</code></pre>
+
+    <h2>Part 1：Firebase — 讓你的網頁記住資料</h2>
+    <h3>Firebase 是什麼？</h3>
+    <blockquote><p>你的 HTML 網頁本身只是一張畫布，Firebase 是畫布後面的倉庫——不管誰打開這個網頁，看到的都是同一份最新資料。</p></blockquote>
+    <p>對這個課程最有用的功能是 <strong>Firestore</strong>，一個可以直接從 HTML 讀寫的雲端資料庫。</p>
+    <h3>請 Claude 把 Firebase 加進你的網頁</h3>
+    <p><strong>Step 1：先在 Firebase 建立專案</strong></p>
+    <pre><code>我想在我的 HTML 網頁裡加入 Firebase，讓資料可以存在雲端。
+請告訴我怎麼建立 Firebase 專案，以及怎麼拿到 API 設定碼。
+我完全沒用過 Firebase。</code></pre>
+    <p><strong>Step 2：把 Firebase 加進現有的 HTML</strong></p>
+    <pre><code>我有一個餐廳流量追蹤的 HTML 網頁，現在資料只存在瀏覽器本機。
+請幫我加入 Firebase Firestore，讓資料改成存到雲端，
+不同裝置打開這個網頁都能看到同一份資料。
+
+我的 Firebase 設定如下：
+[貼上你的 Firebase 設定碼]</code></pre>
+
+    <h2>Part 2：Git + GitHub — 版本控制完整教學</h2>
+    <h3>Git 是什麼？</h3>
+    <blockquote><p>Git 就是把「版本紀錄」功能帶給你整個專案資料夾的工具。每次你覺得「這個版本不錯」，按一個指令存一個快照（叫做 <strong>commit</strong>）。改壞了，隨時可以回到任何一個快照。</p></blockquote>
+    <h3>GitHub 是什麼？</h3>
+    <p>Git 的快照存在你的電腦本機。<strong>GitHub</strong> 是把這些快照上傳到雲端的地方：電腦壞掉不怕、可以用 GitHub Pages 發布網站、快照之間的差異一目瞭然。</p>
+
+    <h3>Step 1：第一次設定（只做一次）</h3>
+    <pre><code>幫我把這個資料夾初始化成 Git 倉庫，
+然後做第一個 commit，說明是「餐廳流量儀表板初始版本」。
+我完全沒用過 Git，請一步步帶我做。</code></pre>
+
+    <h3>Step 2：養成 commit 的習慣</h3>
+    <p>Commit 就像<strong>遊戲存檔</strong>——改完一個功能就存一下。</p>
+    <pre><code>我剛把「匯出 CSV」功能加進去了，測試也沒問題。
+幫我整理這次改了什麼，寫一個清楚的 commit message 然後存起來。</code></pre>
+
+    <h3>Step 3：Push 到 GitHub</h3>
+    <pre><code>幫我在 GitHub 建立一個新的倉庫，
+把這個專案推上去，倉庫名稱叫 restaurant-dashboard。
+我的 GitHub 帳號是 [你的帳號名稱]</code></pre>
+
+    <h3>Step 4：分支——安全的實驗沙盒</h3>
+    <pre><code>我想試試把儀表板改成深色主題，但不確定效果好不好，
+怕改壞了現在的版本。幫我開一個新分支叫 dark-theme，
+讓我在上面試試看，不影響主線。</code></pre>
+
+    <h3>Step 5：回溯——改壞了怎麼辦</h3>
+    <pre><code>幫我列出這個專案的 commit 紀錄，
+顯示每個版本的時間和說明</code></pre>
+    <div class="notice"><strong>注意：</strong> 回溯是不可逆的操作，Claude 每次都會先告訴你影響範圍，確認後才執行。不確定的話，先開新分支備份現在的進度再回溯。</div>
+
+    <h2>Part 3：GitHub Pages — 發布你的網址</h2>
+    <p>網址格式：<code>https://你的帳號.github.io/倉庫名稱</code></p>
+    <ol>
+      <li>進到你的 GitHub 倉庫頁面</li>
+      <li>點右上角 <strong>Settings</strong> → 左側選單 <strong>Pages</strong></li>
+      <li>Source 選 <strong>Deploy from a branch</strong>，Branch 選 <strong>main</strong>，資料夾選 <code>/ (root)</code></li>
+      <li>點 Save，等約 1 分鐘</li>
+    </ol>
+    <pre><code>我已經把專案推到 GitHub 了，
+請告訴我怎麼開啟 GitHub Pages，讓這個 HTML 有一個可以分享的網址</code></pre>
+
+    <h2>全部串起來之後</h2>
+    <p>你最後會得到：有固定網址的網頁、資料存在 Firebase 跨裝置同步、每次改版都有記錄。</p>
+    <pre><code>修改 HTML → git commit → git push → GitHub Pages 自動更新（約 1 分鐘）</code></pre>
+  </div>
+  <div class="ch-nav">
+    <button class="nav-btn" onclick="nav('view-w4')">← 打包工具組合</button>
+    <button class="nav-btn" onclick="nav('view-home')">回到首頁 ↩</button>
+  </div>
+</div>
+</div>
+
+<script>
+function nav(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  history.pushState(null, '', '#' + id);
+}
+window.addEventListener('popstate', () => {
+  const id = location.hash.slice(1) || 'view-home';
+  const el = document.getElementById(id);
+  if (el) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    el.classList.add('active');
+    window.scrollTo({ top: 0 });
+  }
+});
+if (location.hash) {
+  const id = location.hash.slice(1);
+  const el = document.getElementById(id);
+  if (el) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    el.classList.add('active');
+  }
+}
+</script>
 </body>
 </html>
