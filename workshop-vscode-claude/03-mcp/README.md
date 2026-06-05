@@ -92,4 +92,24 @@ Claude 找到相關頁面，整理後回傳給你
 
 ---
 
+---
+
+## 🌟 加碼：手機遠端控制桌面版 Claude（Dispatch）
+
+學完 MCP 之後，來試試把它和 **Dispatch** 結合——這是 Claude 桌面版的遠端連線功能，讓你用手機就能驅動桌面版 Claude 執行任務。
+
+**情境：你離開電腦了，但想讓 Claude 幫你把資料整理好上傳**
+
+1. 手機開 Claude app，用同一個帳號登入
+2. 進入 **Dispatch 模式**（遠端連線到桌面版）
+3. 對手機說：「幫我把這個專案的 README 上傳到 Google Drive 的『Claude 練習』資料夾」
+4. 看桌面版 Claude 自動執行，完成後到 Google Drive 確認
+
+這個示範的重點不是「上傳檔案」，而是：
+> **MCP 賦予 Claude 工具（Google Drive）⁺ Dispatch 讓你遠端下指令 → 人不在電腦旁，工作照樣發生**
+
+> **注意：** Dispatch 需要桌面版保持開啟，並且手機和桌面版登入同一帳號。
+
+---
+
 完成了嗎？前往 [04 - Plugin →](../04-plugin/README.md)

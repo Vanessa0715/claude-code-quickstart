@@ -3,6 +3,8 @@
 在開始之前，你需要準備三樣東西：VS Code、Claude 帳號、Claude Code extension。
 
 > **已經用過 claude.ai 網頁版？** 想知道 VS Code 的 Claude Code 和網頁版差在哪裡，先看這份比較圖再回來：[Claude.ai vs VS Code Claude Code](./claude-ai-vs-vscode.html)（在瀏覽器開啟）
+>
+> **同時用桌面版 Claude 的 Code 模式？** 好消息：兩個 client 讀同一個 `.claude/` 資料夾，CLAUDE.md、自訂指令、設定只要寫一次，兩邊都能用。
 
 ---
 
