@@ -1,0 +1,25 @@
+{
+  "_說明": "這是 Claude Code 專案層級的 MCP 設定範例，放在 .claude/settings.json 裡",
+  "_注意": "使用前需要先取得各服務的 API 金鑰，並把 YOUR_xxx_HERE 換成實際的值",
+
+  "mcpServers": {
+    "notion": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-notion"],
+      "env": {
+        "NOTION_API_KEY": "YOUR_NOTION_API_KEY_HERE"
+      },
+      "_如何取得 API Key": "前往 notion.so/my-integrations，建立一個 Integration，複製 Internal Integration Token"
+    },
+
+    "google-calendar": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/mcp-server-google-calendar"],
+      "env": {
+        "GOOGLE_CLIENT_ID": "YOUR_GOOGLE_CLIENT_ID_HERE",
+        "GOOGLE_CLIENT_SECRET": "YOUR_GOOGLE_CLIENT_SECRET_HERE"
+      },
+      "_如何取得": "前往 Google Cloud Console，建立 OAuth 2.0 憑證，類型選 Desktop App"
+    }
+  }
+}

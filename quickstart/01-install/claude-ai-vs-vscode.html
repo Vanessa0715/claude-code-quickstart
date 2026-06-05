@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude 桌面版 vs VS Code Claude Code — 架構差異比較</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f5f0eb; font-family: 'Georgia', 'Noto Serif TC', serif; color: #3d2e1e; min-height: 100vh; padding: 40px 16px 72px; }
+  .container { max-width: 940px; margin: 0 auto; }
+
+  h1 { text-align: center; font-size: 1.4rem; color: #8b7355; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .subtitle { text-align: center; font-size: 0.85rem; color: #9e8a72; margin-bottom: 48px; font-family: 'Courier New', monospace; }
+
+  .section-label { font-size: 0.75rem; font-family: 'Courier New', monospace; letter-spacing: 0.15em; color: #b09a7e; border-bottom: 1px solid #d8ccbe; padding-bottom: 6px; margin-bottom: 24px; }
+
+  /* Three mode cards */
+  .modes { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 40px; }
+  @media (max-width: 680px) { .modes { grid-template-columns: 1fr; } }
+
+  .mode-card { background: #fff8f2; border: 1px solid #e0d4c4; border-radius: 12px; overflow: hidden; }
+  .mode-header { padding: 12px 16px; font-size: 0.75rem; font-family: 'Courier New', monospace; letter-spacing: 0.12em; font-weight: bold; }
+  .mode-header.chat  { background: #c4b5a5; color: #fff; }
+  .mode-header.proj  { background: #5b6fb5; color: #fff; }
+  .mode-header.code  { background: #3a8f6a; color: #fff; }
+  .mode-body { padding: 14px 16px; }
+  .mode-name { font-size: 0.92rem; font-weight: bold; color: #3d2e1e; margin-bottom: 6px; }
+  .mode-desc { font-size: 0.8rem; color: #5a4535; line-height: 1.6; margin-bottom: 10px; }
+  .mode-points { list-style: none; }
+  .mode-points li { font-size: 0.77rem; color: #7a6355; padding: 3px 0; display: flex; gap: 6px; line-height: 1.5; }
+  .mode-points li::before { content: '▸'; color: #c9b99a; flex-shrink: 0; }
+  .mode-note { font-size: 0.73rem; margin-top: 10px; padding: 6px 10px; border-radius: 4px; line-height: 1.55; }
+  .mode-note.warn { background: #fef0ee; color: #b03a2e; }
+  .mode-note.good { background: #edf7f0; color: #2d6a4f; }
+
+  /* Hero */
+  .hero { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 0; margin-bottom: 40px; align-items: stretch; }
+  @media (max-width: 600px) { .hero { grid-template-columns: 1fr; } .vs-divider { display: none; } }
+
+  .hero-card { background: #fff8f2; border: 1px solid #e0d4c4; border-radius: 12px; overflow: hidden; }
+  .hero-header { padding: 16px 20px; }
+  .hero-header.native { background: #3a8f6a; color: #fff; }
+  .hero-header.vscode { background: #8b7355; color: #fff; }
+  .hero-platform { font-size: 0.72rem; font-family: 'Courier New', monospace; letter-spacing: 0.12em; opacity: 0.85; margin-bottom: 4px; }
+  .hero-name { font-size: 1rem; font-weight: bold; letter-spacing: 0.03em; }
+  .hero-body { padding: 18px 20px; }
+  .hero-tagline { font-size: 0.9rem; color: #3d2e1e; line-height: 1.6; margin-bottom: 14px; font-style: italic; }
+  .hero-points { list-style: none; }
+  .hero-points li { font-size: 0.83rem; color: #5a4535; line-height: 1.6; padding: 4px 0; display: flex; gap: 8px; }
+  .hero-points li::before { content: '▸'; color: #c9b99a; flex-shrink: 0; }
+  .vs-divider { display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-family: 'Courier New', monospace; color: #b09a7e; }
+
+  /* Callout */
+  .callout { background: #fff8f2; border: 2px solid #c9b99a; border-radius: 12px; padding: 22px 26px; margin-bottom: 40px; }
+  .callout-label { font-size: 0.72rem; font-family: 'Courier New', monospace; letter-spacing: 0.15em; color: #b09a7e; margin-bottom: 12px; }
+  .callout-body { font-size: 0.88rem; line-height: 1.75; color: #3d2e1e; }
+  .callout-body strong { color: #8b7355; }
+  .callout-example { margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 600px) { .callout-example { grid-template-columns: 1fr; } }
+  .ex-box { background: #f5f0eb; border-radius: 8px; padding: 14px 16px; font-size: 0.82rem; line-height: 1.6; }
+  .ex-label { font-size: 0.68rem; font-family: 'Courier New', monospace; letter-spacing: 0.12em; color: #b09a7e; margin-bottom: 8px; }
+  .ex-user { color: #3a7a5e; margin-bottom: 6px; }
+  .ex-claude { color: #8b7355; }
+  .ex-action { color: #2d6a4f; font-style: italic; font-size: 0.78rem; margin-top: 4px; }
+  .ex-action.brown { color: #8b7355; }
+
+  /* Comparison table */
+  .compare-wrap { overflow-x: auto; margin-bottom: 40px; }
+  .compare-table { width: 100%; border-collapse: collapse; background: #fff8f2; border-radius: 12px; overflow: hidden; border: 1px solid #e0d4c4; min-width: 680px; }
+  .compare-table th { padding: 11px 14px; font-size: 0.74rem; font-family: 'Courier New', monospace; letter-spacing: 0.06em; font-weight: bold; text-align: left; }
+  .compare-table th:first-child { background: #ede8e2; color: #6b5b4e; width: 18%; }
+  .compare-table th.th-chat     { background: #c4b5a5; color: #fff; }
+  .compare-table th.th-proj     { background: #5b6fb5; color: #fff; }
+  .compare-table th.th-code     { background: #3a8f6a; color: #fff; }
+  .compare-table th.th-vscode   { background: #8b7355; color: #fff; }
+  .compare-table td { padding: 11px 14px; font-size: 0.81rem; border-top: 1px solid #ede4d8; vertical-align: top; line-height: 1.6; }
+  .compare-table td:first-child { color: #8b7355; font-weight: bold; font-size: 0.71rem; font-family: 'Courier New', monospace; background: #faf6f1; letter-spacing: 0.03em; white-space: nowrap; }
+  .compare-table tr:hover td { background: #fdf9f5; }
+  .compare-table tr:hover td:first-child { background: #f5f0eb; }
+
+  .yes     { color: #2d6a4f; font-weight: bold; }
+  .no      { color: #b03a2e; }
+  .partial { color: #92610a; font-weight: bold; }
+  .dim     { color: #9e8a72; font-size: 0.77rem; }
+  code     { background: #e8ddd0; padding: 1px 5px; border-radius: 3px; font-size: 0.78rem; color: #6b4f2e; font-family: 'Courier New', monospace; }
+
+  .tag { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 0.72rem; font-family: 'Courier New', monospace; margin: 1px 2px 1px 0; }
+  .tag-gray  { background: #e8e4e0; color: #5a4f47; }
+  .tag-blue  { background: #dde3f5; color: #3a4a8a; }
+  .tag-green { background: #d4edda; color: #2d6a4f; }
+  .tag-brown { background: #e8ddd0; color: #6b4f2e; }
+
+  /* When to use */
+  .when { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+  @media (max-width: 600px) { .when { grid-template-columns: 1fr; } }
+  .when-card { background: #fff8f2; border: 1px solid #e0d4c4; border-radius: 12px; padding: 20px 22px; }
+  .when-header { font-size: 0.78rem; font-family: 'Courier New', monospace; letter-spacing: 0.08em; margin-bottom: 14px; font-weight: bold; }
+  .when-header.native { color: #3a8f6a; }
+  .when-header.vscode { color: #8b7355; }
+  .when-list { list-style: none; }
+  .when-list li { font-size: 0.83rem; color: #3d2e1e; padding: 5px 0; display: flex; gap: 8px; align-items: flex-start; line-height: 1.55; border-bottom: 1px solid #f0e8de; }
+  .when-list li:last-child { border-bottom: none; }
+  .badge { display: inline-block; font-size: 0.66rem; font-family: 'Courier New', monospace; padding: 1px 5px; border-radius: 3px; flex-shrink: 0; margin-top: 2px; }
+  .badge-chat { background: #e8e4e0; color: #6b5b4e; }
+  .badge-proj { background: #dde3f5; color: #3a4a8a; }
+  .badge-code { background: #d4edda; color: #2d6a4f; }
+
+  .bottom-note { text-align: center; font-size: 0.82rem; color: #9e8a72; font-style: italic; line-height: 1.8; }
+  .bottom-note strong { color: #8b7355; font-style: normal; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>Claude 桌面版 vs VS Code Claude Code</h1>
+  <p class="subtitle">── 原生桌面 App 三種使用情境 × IDE 整合代理環境 ──</p>
+
+  <!-- ① Three modes -->
+  <div class="section-label">━━ Claude 桌面版的三種使用情境 ━━</div>
+  <div class="modes">
+
+    <div class="mode-card">
+      <div class="mode-header chat">CHAT 一般對話</div>
+      <div class="mode-body">
+        <div class="mode-name">快速問答、寫作助理</div>
+        <div class="mode-desc">最輕量的使用方式——你說話，Claude 回答，不需要任何特殊設定。</div>
+        <ul class="mode-points">
+          <li>問問題、翻譯、摘要、草稿</li>
+          <li>腦力激盪、探索想法</li>
+          <li>打開就能用，零設定</li>
+        </ul>
+        <div class="mode-note warn">無法讀寫你電腦上的檔案</div>
+      </div>
+    </div>
+
+    <div class="mode-card">
+      <div class="mode-header proj">COWORK 共同協作</div>
+      <div class="mode-body">
+        <div class="mode-name">跨對話脈絡、協作工作空間</div>
+        <div class="mode-desc">以協作為核心的模式，可建立持久對話脈絡，支援多人共用工作空間（視方案而定）。</div>
+        <ul class="mode-points">
+          <li>在共同空間內與 Claude 持續推進工作</li>
+          <li>邀請他人加入同一個工作空間（Team / Enterprise 方案）</li>
+          <li>Projects：為特定主題建立知識庫，上傳 PDF、文件作為參考，跨對話永久保留</li>
+        </ul>
+        <div class="mode-note good">可讀寫本地檔案——與 Code 模式的差異在於協作與知識庫管理</div>
+      </div>
+    </div>
+
+    <div class="mode-card">
+      <div class="mode-header code">CODE 代理模式</div>
+      <div class="mode-body">
+        <div class="mode-name">Claude Code 內建版</div>
+        <div class="mode-desc">同一套代理引擎，可直接讀寫你電腦上的檔案、執行終端機指令。</div>
+        <ul class="mode-points">
+          <li>讀取並修改本地檔案</li>
+          <li>執行 shell 指令</li>
+          <li>偶爾動檔案不需要開 VS Code</li>
+        </ul>
+        <div class="mode-note good">與 VS Code Extension 用同一套引擎——差在 IDE 整合深度</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ② Code mode vs VS Code hero -->
+  <div class="section-label">━━ 同引擎，但環境不同：Code 模式 vs VS Code ━━</div>
+  <div class="hero">
+
+    <div class="hero-card">
+      <div class="hero-header native">
+        <div class="hero-platform">NATIVE APP · CODE MODE</div>
+        <div class="hero-name">桌面版 Code 模式</div>
+      </div>
+      <div class="hero-body">
+        <div class="hero-tagline">「輕量代理，不綁定任何 IDE」</div>
+        <ul class="hero-points">
+          <li>在 Claude 原生介面操作，介面簡潔</li>
+          <li>可讀寫本地檔案、執行指令</li>
+          <li>不需要安裝 VS Code</li>
+          <li>任務需要<strong>用文字</strong>描述檔案路徑與結構</li>
+          <li>修改結果在對話視窗內呈現</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="vs-divider">vs</div>
+
+    <div class="hero-card">
+      <div class="hero-header vscode">
+        <div class="hero-platform">VSCODE · EXTENSION</div>
+        <div class="hero-name">VS Code Claude Code</div>
+      </div>
+      <div class="hero-body">
+        <div class="hero-tagline">「嵌入 IDE 的代理開發環境」</div>
+        <ul class="hero-points">
+          <li>左側檔案樹讓 Claude 直接掌握專案結構</li>
+          <li>Diff 預覽：修改前後一目了然，逐行 Accept / Reject</li>
+          <li>CLAUDE.md 自動載入，<code>@</code> 補全顯示可用檔案</li>
+          <li>IDE 視覺脈絡替代文字描述，<strong>省下大量 token</strong></li>
+          <li>語法高亮、跳轉定義同時可用</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ③ Key difference callout -->
+  <div class="section-label">━━ 同樣能動手，差在「看修改的方式」 ━━</div>
+  <div class="callout">
+    <div class="callout-label">CORE DIFFERENCE</div>
+    <div class="callout-body">
+      兩者都支援 <code>@</code> 引用檔案、都能直接讀寫本地檔案——操作語法幾乎一樣。<br>
+      關鍵差異在於<strong>修改結果怎麼呈現</strong>：桌面版把 diff 顯示在對話視窗裡，你要自己閱讀文字判斷改了什麼；<br>
+      VS Code 則是在編輯器裡開啟原生 diff 介面，逐行高亮、Accept / Reject 按鈕就在修改旁邊。<br>
+      任務越複雜、改的檔案越多，這個差距越明顯。
+    </div>
+    <div class="callout-example">
+      <div class="ex-box">
+        <div class="ex-label">桌面版 CODE 模式 — diff 在對話裡</div>
+        <div class="ex-user">你：@main.py @settings.json 把 API key 移到 settings.json</div>
+        <div class="ex-claude">Claude：已修改兩個檔案——<br>main.py 第 12 行移除 API_KEY = "..."<br>settings.json 新增 "api_key": "..."</div>
+        <div class="ex-action brown">→ 對話視窗顯示文字 diff，自己確認後存檔</div>
+      </div>
+      <div class="ex-box">
+        <div class="ex-label">VS CODE CLAUDE CODE — diff 在編輯器裡</div>
+        <div class="ex-user">你：@main.py @settings.json 把 API key 移到 settings.json</div>
+        <div class="ex-claude">Claude：找到並修改兩個檔案——</div>
+        <div class="ex-action">→ VS Code 編輯器直接開啟 diff，紅刪綠增逐行顯示，點 Accept / Reject 確認每一行</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ Comparison table -->
+  <div class="section-label">━━ 功能對照 ━━</div>
+  <div class="compare-wrap">
+  <table class="compare-table">
+    <tr>
+      <th>功能</th>
+      <th class="th-chat">Chat<br><span style="font-weight:normal;opacity:0.85">一般對話</span></th>
+      <th class="th-proj">Cowork<br><span style="font-weight:normal;opacity:0.85">共同協作</span></th>
+      <th class="th-code">Code 模式<br><span style="font-weight:normal;opacity:0.85">桌面版代理</span></th>
+      <th class="th-vscode">VS Code<br><span style="font-weight:normal;opacity:0.85">Extension</span></th>
+    </tr>
+    <tr>
+      <td>讀取本地檔案</td>
+      <td><span class="no">✗</span></td>
+      <td><span class="yes">✓</span></td>
+      <td><span class="yes">✓</span></td>
+      <td><span class="yes">✓</span></td>
+    </tr>
+    <tr>
+      <td>直接修改檔案</td>
+      <td><span class="no">✗</span></td>
+      <td><span class="yes">✓</span></td>
+      <td><span class="yes">✓</span></td>
+      <td><span class="yes">✓</span></td>
+    </tr>
+    <tr>
+      <td>Diff 預覽介面</td>
+      <td><span class="no">✗</span></td>
+      <td><span class="partial">△</span> <span class="dim">對話視窗內文字顯示</span></td>
+      <td><span class="partial">△</span> <span class="dim">對話視窗內文字顯示</span></td>
+      <td><span class="yes">✓</span> <span class="dim">VS Code 原生 diff，逐行 Accept/Reject</span></td>
+    </tr>
+    <tr>
+      <td>IDE 視覺整合</td>
+      <td><span class="no">✗</span></td>
+      <td><span class="no">✗</span></td>
+      <td><span class="no">✗</span> <span class="dim">純對話介面</span></td>
+      <td><span class="yes">✓</span> <span class="dim">檔案樹、終端機、語法高亮同時可用</span></td>
+    </tr>
+    <tr>
+      <td>Diff 呈現方式</td>
+      <td><span class="no">✗</span> <span class="dim">無代理模式</span></td>
+      <td><span class="no">✗</span> <span class="dim">無代理模式</span></td>
+      <td><span class="partial">△</span> <span class="dim">對話視窗內文字 diff</span></td>
+      <td><span class="yes">✓</span> <span class="dim">編輯器原生 diff，逐行 Accept/Reject</span></td>
+    </tr>
+    <tr>
+      <td>持久專案記憶</td>
+      <td><span class="no">✗</span> <span class="dim">每次重置</span></td>
+      <td><span class="yes">✓</span> <span class="dim">Cowork 空間 + Projects 知識庫；共享功能視方案而定</span></td>
+      <td><span class="partial">△</span> <span class="dim">CLAUDE.md 本地管理</span></td>
+      <td><span class="partial">△</span> <span class="dim">CLAUDE.md 本地管理</span></td>
+    </tr>
+    <tr>
+      <td>執行終端機指令</td>
+      <td><span class="no">✗</span></td>
+      <td><span class="no">✗</span></td>
+      <td><span class="yes">✓</span></td>
+      <td><span class="yes">✓</span></td>
+    </tr>
+    <tr>
+      <td>自訂 /指令</td>
+      <td><span class="partial">△</span> <span class="dim">在 Claude 設定頁建立，跟著帳號走，無法隨專案分享</span></td>
+      <td><span class="partial">△</span> <span class="dim">在 Claude 設定頁建立，跟著帳號走，無法隨專案分享</span></td>
+      <td><span class="yes">✓</span> <span class="dim">存在專案資料夾裡的 .md 檔，跟著專案走，可以整包分享給別人</span></td>
+      <td><span class="yes">✓</span> <span class="dim">存在專案資料夾裡的 .md 檔，跟著專案走，可以整包分享給別人</span></td>
+    </tr>
+    <tr>
+      <td>/compact 等指令</td>
+      <td><span class="no">✗</span> <span class="dim">輸入後當一般文字發出，不觸發任何功能</span></td>
+      <td><span class="no">✗</span> <span class="dim">同左</span></td>
+      <td><span class="yes">✓</span> <span class="dim">/compact、/clear 等 Claude Code 內建指令可正常使用</span></td>
+      <td><span class="yes">✓</span> <span class="dim">同左</span></td>
+    </tr>
+    <tr>
+      <td>MCP 外部工具</td>
+      <td><span class="yes">✓</span></td>
+      <td><span class="yes">✓</span></td>
+      <td><span class="yes">✓</span></td>
+      <td><span class="yes">✓</span></td>
+    </tr>
+    <tr>
+      <td>費用</td>
+      <td>Free 可用</td>
+      <td>Free 可用 <span class="dim">（容量有限）</span></td>
+      <td colspan="2" style="text-align:center;"><span style="color:#b03a2e;">需 Pro 或 API Key（免費帳號無法使用）</span></td>
+    </tr>
+    <tr>
+      <td>最適場景</td>
+      <td>
+        <span class="tag tag-gray">問答</span>
+        <span class="tag tag-gray">寫作</span>
+        <span class="tag tag-gray">腦激盪</span>
+      </td>
+      <td>
+        <span class="tag tag-blue">共同協作</span>
+        <span class="tag tag-blue">知識庫</span>
+        <span class="tag tag-blue">團隊共享</span>
+      </td>
+      <td>
+        <span class="tag tag-green">偶爾改檔</span>
+        <span class="tag tag-green">快速腳本</span>
+      </td>
+      <td>
+        <span class="tag tag-brown">正式開發</span>
+        <span class="tag tag-brown">多檔修改</span>
+        <span class="tag tag-brown">反覆迭代</span>
+      </td>
+    </tr>
+  </table>
+  </div>
+
+  <!-- ⑤ When to use -->
+  <div class="section-label">━━ 什麼時候用哪個 ━━</div>
+  <div class="when">
+
+    <div class="when-card">
+      <div class="when-header native">用 Claude 桌面版，當你想要⋯</div>
+      <ul class="when-list">
+        <li><span class="badge badge-chat">Chat</span>快速問答、翻譯、摘要——不需要動任何檔案</li>
+        <li><span class="badge badge-chat">Chat</span>腦力激盪、探索想法、快速草稿</li>
+        <li><span class="badge badge-proj">Cowork</span>與他人共用工作空間，一起推進同一個專案（Team / Enterprise 方案）</li>
+        <li><span class="badge badge-proj">Cowork</span>用 Projects 功能把 PDF、規格書上傳成知識庫，跨對話保留</li>
+        <li><span class="badge badge-code">Code</span>偶爾修幾個檔案，不想特地開 VS Code</li>
+        <li><span class="badge badge-code">Code</span>執行一次性腳本，路徑和任務都很清楚</li>
+      </ul>
+    </div>
+
+    <div class="when-card">
+      <div class="when-header vscode">用 VS Code Claude Code，當你想要⋯</div>
+      <ul class="when-list">
+        <li>讓 Claude 修改多個檔案，並看到每一行 diff 再決定要不要接受</li>
+        <li>正式開發工作：從零建立專案、debug、重構</li>
+        <li>任務複雜、跨越多個檔案——省 token 又省解釋成本</li>
+        <li>用 .claude/commands/ 管理可版本控制的快捷指令組合</li>
+        <li>在修改過程中隨時用 VS Code 的功能跳轉、查文件</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <p class="bottom-note">
+    <strong>Chat 和 Cowork</strong> 是日常對話首選，不需要任何進階設定。<br>
+    需要 Claude <strong>真的動手做事</strong>時，Code 模式和 VS Code 都可以——但有兩個實用差異值得注意：<br><br>
+    <strong>① VS Code 比較省 token</strong>：CLAUDE.md 自動載入、<code>@</code> 精確引用檔案，同樣的任務說明量更少。<br>
+    <strong>② 用量上限行為不同</strong>：桌面版 Code 模式的對話視窗一旦達到用量上限就無法繼續，<br>
+    重要記錄來不及存就消失；VS Code 用量刷新後可以接續原本的工作，不會整個作廢。<br><br>
+    偶爾的一次性小任務，桌面版 Code 模式就夠；長時間、複雜的工作，選 <strong>VS Code</strong> 更穩。<br><br>
+    <strong>③ 想要「專案背景 + 代理能力」一次到位</strong>：把參考文件放進專案資料夾、用 <code>@</code> 引用，VS Code Claude Code 就能做到類似 Cowork 知識庫的效果。對個人使用者來說，不需要同時維護兩個地方。<br>
+    <span style="font-size:0.78rem;color:#9e8a72;">兩種情況 Cowork Projects 還是比較方便：① 知識庫以 PDF / Word 文件為主（Projects 預先處理並建索引，不佔對話的 context；VS Code 的 @ 引用會把 PDF 整份內容送進 context，大型文件容易截斷或快速耗盡 token）；② 需要與團隊成員共用同一份知識庫（VS Code 的檔案在本機，要共用得靠 git 或其他方式）。</span>
+  </p>
+
+</div>
+</body>
+</html>

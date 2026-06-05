@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vanessa 的 Claude Code 應用地圖</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f5f0eb; font-family: 'Georgia', 'Noto Serif TC', serif; color: #3d2e1e; min-height: 100vh; padding: 40px 16px 80px; }
+  .container { max-width: 860px; margin: 0 auto; }
+
+  h1 { text-align: center; font-size: 1.5rem; color: #8b7355; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .subtitle { text-align: center; font-size: 0.82rem; color: #9e8a72; margin-bottom: 8px; font-family: 'Courier New', monospace; }
+  .back-link { text-align: center; margin-bottom: 44px; }
+  .back-link a { font-size: 0.78rem; color: #b09a7e; font-family: 'Courier New', monospace; text-decoration: none; }
+  .back-link a:hover { color: #8b7355; }
+
+  .section-label { font-size: 0.72rem; font-family: 'Courier New', monospace; letter-spacing: 0.15em; color: #b09a7e; border-bottom: 1px solid #d8ccbe; padding-bottom: 6px; margin-bottom: 24px; }
+
+  /* Overview grid */
+  .overview { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 48px; }
+  @media (max-width: 640px) { .overview { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 400px) { .overview { grid-template-columns: 1fr; } }
+  .ov-card { background: #fff8f2; border: 1px solid #e0d4c4; border-radius: 10px; padding: 14px 16px; display: flex; gap: 10px; align-items: flex-start; }
+  .ov-num { font-size: 0.65rem; font-family: 'Courier New', monospace; color: #c9b99a; flex-shrink: 0; padding-top: 2px; }
+  .ov-emoji { font-size: 1.1rem; flex-shrink: 0; }
+  .ov-text { font-size: 0.78rem; color: #5a4030; line-height: 1.45; }
+  .ov-text strong { display: block; margin-bottom: 1px; color: #3d2e1e; }
+
+  /* Section blocks */
+  .section { margin-bottom: 36px; }
+  .section-header { display: flex; align-items: center; gap: 12px; background: #fff8f2; border: 1px solid #e0d4c4; border-radius: 12px 12px 0 0; padding: 16px 22px; border-bottom: 2px solid #e0d4c4; }
+  .sec-num { width: 28px; height: 28px; border-radius: 50%; background: #e8ddd0; color: #6b4f2e; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-family: 'Courier New', monospace; font-weight: bold; flex-shrink: 0; }
+  .sec-emoji { font-size: 1.25rem; }
+  .sec-title { font-size: 1rem; color: #3d2e1e; font-weight: bold; }
+  .sec-tag { margin-left: auto; font-size: 0.68rem; font-family: 'Courier New', monospace; letter-spacing: 0.08em; background: #e8ddd0; color: #6b4f2e; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+  .sec-tag.auto { background: #ddeedd; color: #2d5a2d; }
+  .sec-tag.agent { background: #dde3f5; color: #3a4a8a; }
+
+  .section-body { background: #fff8f2; border: 1px solid #e0d4c4; border-top: none; border-radius: 0 0 12px 12px; padding: 20px 22px; }
+
+  .point { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid #ede4d8; align-items: flex-start; }
+  .point:last-child { border-bottom: none; padding-bottom: 0; }
+  .point-dot { width: 6px; height: 6px; border-radius: 50%; background: #c9b99a; flex-shrink: 0; margin-top: 7px; }
+  .point-text { font-size: 0.84rem; color: #3d2e1e; line-height: 1.6; }
+  .point-text em { color: #9e8a72; font-style: normal; font-size: 0.78rem; display: block; margin-top: 2px; }
+
+  /* Tags inside content */
+  .cmd { display: inline-block; background: #e8ddd0; color: #6b4f2e; font-family: 'Courier New', monospace; font-size: 0.75rem; padding: 1px 8px; border-radius: 4px; margin: 0 2px; }
+  .agent-tag { display: inline-block; background: #dde3f5; color: #3a4a8a; font-family: 'Courier New', monospace; font-size: 0.72rem; padding: 1px 8px; border-radius: 4px; margin: 0 2px; }
+  .hook-tag { display: inline-block; background: #ddeedd; color: #2d5a2d; font-family: 'Courier New', monospace; font-size: 0.72rem; padding: 1px 8px; border-radius: 4px; margin: 0 2px; }
+  .arrow { color: #b09a7e; margin: 0 3px; }
+
+  /* Agent grid */
+  .agent-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 10px 0 4px; }
+  @media (max-width: 600px) { .agent-grid { grid-template-columns: repeat(3, 1fr); } }
+  .agent-card { background: #dde3f5; border-radius: 8px; padding: 10px 8px; text-align: center; }
+  .agent-card.sasa { background: #f5e8f0; }
+  .agent-code { font-family: 'Courier New', monospace; font-size: 0.65rem; color: #3a4a8a; font-weight: bold; }
+  .agent-card.sasa .agent-code { color: #7a3a6a; }
+  .agent-name { font-size: 0.7rem; color: #3d2e1e; margin-top: 3px; line-height: 1.3; }
+
+  /* Hook list */
+  .hook-list { margin: 8px 0 0; }
+  .hook-row { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #ede4d8; align-items: flex-start; font-size: 0.82rem; }
+  .hook-row:last-child { border-bottom: none; }
+  .hook-trigger { font-family: 'Courier New', monospace; font-size: 0.72rem; color: #2d5a2d; background: #ddeedd; padding: 1px 8px; border-radius: 4px; flex-shrink: 0; white-space: nowrap; }
+  .hook-desc { color: #5a4030; line-height: 1.5; }
+
+  /* Callout */
+  .callout { background: #f0ede8; border-left: 3px solid #c9b99a; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 12px 0 4px; font-size: 0.8rem; color: #5a4030; line-height: 1.65; }
+
+  /* Footer */
+  .footer { text-align: center; margin-top: 48px; font-size: 0.75rem; color: #c9b99a; font-family: 'Courier New', monospace; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>Vanessa 的 Claude Code 應用地圖</h1>
+  <p class="subtitle">── 7 個真實場景，從工作到生活 ──</p>
+  <div class="back-link"><a href="index.html">← 回教材首頁</a></div>
+
+  <div class="section-label">━━ 總覽 ━━</div>
+  <div class="overview">
+    <div class="ov-card">
+      <div class="ov-num">01</div>
+      <div>
+        <div class="ov-emoji">🏗</div>
+        <div class="ov-text"><strong>全域基礎建設</strong>一次設定，所有專案共享</div>
+      </div>
+    </div>
+    <div class="ov-card">
+      <div class="ov-num">02</div>
+      <div>
+        <div class="ov-emoji">🔔</div>
+        <div class="ov-text"><strong>自動化通知系統</strong>Claude 狀態推 Discord</div>
+      </div>
+    </div>
+    <div class="ov-card">
+      <div class="ov-num">03</div>
+      <div>
+        <div class="ov-emoji">🏢</div>
+        <div class="ov-text"><strong>Lita 台灣 HQ</strong>多 Agent 虛擬小團隊</div>
+      </div>
+    </div>
+    <div class="ov-card">
+      <div class="ov-num">04</div>
+      <div>
+        <div class="ov-emoji">🎀</div>
+        <div class="ov-text"><strong>Sasa Studio</strong>IG 內容創作公司</div>
+      </div>
+    </div>
+    <div class="ov-card">
+      <div class="ov-num">05</div>
+      <div>
+        <div class="ov-emoji">📖</div>
+        <div class="ov-text"><strong>English Learning</strong>AI 家教 + 學習工具</div>
+      </div>
+    </div>
+    <div class="ov-card">
+      <div class="ov-num">06</div>
+      <div>
+        <div class="ov-emoji">💼</div>
+        <div class="ov-text"><strong>Job Hunt 2026</strong>求職加速作戰室</div>
+      </div>
+    </div>
+    <div class="ov-card" style="grid-column: span 1;">
+      <div class="ov-num">07</div>
+      <div>
+        <div class="ov-emoji">📱</div>
+        <div class="ov-text"><strong>My Planner</strong>用 AI 做 App</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">━━ 詳細介紹 ━━</div>
+
+  <!-- 01 基礎建設 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="sec-num">01</div>
+      <div class="sec-emoji">🏗</div>
+      <div class="sec-title">全域基礎建設</div>
+      <div class="sec-tag">所有專案共享</div>
+    </div>
+    <div class="section-body">
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          <strong>全域 CLAUDE.md</strong> — 寫一次，所有專案都讀得到的個人規則：語言偏好、稱呼方式、回應格式
+        </div>
+      </div>
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          全域快捷指令（Skills）：常用 prompt 變成一個 <span class="cmd">/指令</span>，跨專案都能用
+          <em>
+            <span class="cmd">/daily-report</span> 一鍵產出今日個人日報（HTML 儀表板）&nbsp;·&nbsp;
+            <span class="cmd">/commit</span> 快速提交當前檔案&nbsp;·&nbsp;
+            <span class="cmd">/sync-commands</span> 指令有更動時自動同步 Notion
+          </em>
+        </div>
+      </div>
+      <div class="callout">
+        💡 概念：就像手機的「全域設定」vs「單一 App 設定」——全域的每個 App 都繼承，不用一個一個設。
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 自動化通知 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="sec-num">02</div>
+      <div class="sec-emoji">🔔</div>
+      <div class="sec-title">自動化通知系統（Hooks）</div>
+      <div class="sec-tag auto">自動觸發</div>
+    </div>
+    <div class="section-body">
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          <strong>Hooks</strong> 是「當某件事發生時，自動執行這個動作」的機制——不需要 Claude 自己決定，系統層級觸發
+        </div>
+      </div>
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          Discord Webhook 整合：Claude 工作狀態即時推送到 Discord，不用一直盯著畫面
+          <div class="hook-list" style="margin-top:10px;">
+            <div class="hook-row">
+              <div class="hook-trigger">需要授權</div>
+              <div class="hook-desc">推送「Claude Code 需要你確認權限，請回來看一下！」</div>
+            </div>
+            <div class="hook-row">
+              <div class="hook-trigger">閒置中</div>
+              <div class="hook-desc">推送「Claude Code 閒置中，等你下指令」</div>
+            </div>
+            <div class="hook-row">
+              <div class="hook-trigger">認證成功</div>
+              <div class="hook-desc">推送「認證成功，可以繼續了」</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          Hooks 覆蓋 Claude 的完整生命週期：<span class="hook-tag">SessionStart</span> <span class="hook-tag">PreToolUse</span> <span class="hook-tag">PostToolUse</span> <span class="hook-tag">Stop</span> <span class="hook-tag">SubagentStart</span> 等
+        </div>
+      </div>
+      <div class="callout">
+        💡 概念：就像你在廚房裝了感應器——鍋子開火自動開抽油煙機，不用人去按。
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 Lita -->
+  <div class="section">
+    <div class="section-header">
+      <div class="sec-num">03</div>
+      <div class="sec-emoji">🏢</div>
+      <div class="sec-title">工作場景 — Lita 台灣 HQ</div>
+      <div class="sec-tag agent">多 Agent 協作</div>
+    </div>
+    <div class="section-body">
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          <strong>虛擬 AI 小團隊</strong>：在 CLAUDE.md 裡定義 5 個部門角色，Claude 根據任務自動判斷要調用哪個
+        </div>
+      </div>
+      <div class="agent-grid">
+        <div class="agent-card">
+          <div class="agent-code">DATA</div>
+          <div class="agent-name">📊 數據分析部</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code">INTEL</div>
+          <div class="agent-name">🔍 競品情報部</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code">COPY</div>
+          <div class="agent-name">✍️ 文案設計師</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code">SCHED</div>
+          <div class="agent-name">📅 排班規劃師</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-code">REPORT</div>
+          <div class="agent-name">📋 戰情副官</div>
+        </div>
+      </div>
+      <div class="point" style="margin-top:10px;">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          <strong>Sub-agent 並行</strong>：說「今日戰情日報」，主 Claude 同時派出多個分身各自執行，REPORT 最後統整——比一件一件做快很多
+        </div>
+      </div>
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          專案指令：
+          <span class="cmd">/analyze-data</span> 自動找最新飛書 CSV <span class="arrow">→</span> 分析（產值 / 異常偵測 / 行動建議）<span class="arrow">→</span> 寫入 Notion 當日日報
+        </div>
+      </div>
+      <div class="callout">
+        💡 概念：角色是規則，Sub-agent 是執行者——同一套規則可以同時跑多個人去做。
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 Sasa Studio -->
+  <div class="section">
+    <div class="section-header">
+      <div class="sec-num">04</div>
+      <div class="sec-emoji">🎀</div>
+      <div class="sec-title">副業場景 — Sasa Studio</div>
+      <div class="sec-tag agent">虛擬員工架構</div>
+    </div>
+    <div class="section-body">
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          <strong>雙帳號架構</strong>：同一套 AI 員工服務兩個 IG 帳號（@sasa.__.studio 知識感 · @sasa_cozy_ 療癒系），各有不同調性規則
+        </div>
+      </div>
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          5 個虛擬員工，每個部門同時 spawn A/B 兩名員工，品牌總監統整輸出
+        </div>
+      </div>
+      <div class="agent-grid">
+        <div class="agent-card sasa">
+          <div class="agent-code" style="color:#7a3a6a;">TREND</div>
+          <div class="agent-name">🔍 爆款偵查員</div>
+        </div>
+        <div class="agent-card sasa">
+          <div class="agent-code" style="color:#7a3a6a;">IDEA</div>
+          <div class="agent-name">💡 創意發想師</div>
+        </div>
+        <div class="agent-card sasa">
+          <div class="agent-code" style="color:#7a3a6a;">COPY</div>
+          <div class="agent-name">✍️ 文案製作師</div>
+        </div>
+        <div class="agent-card sasa">
+          <div class="agent-code" style="color:#7a3a6a;">VISUA</div>
+          <div class="agent-name">🎨 視覺腳本師</div>
+        </div>
+        <div class="agent-card sasa">
+          <div class="agent-code" style="color:#7a3a6a;">GROWTH</div>
+          <div class="agent-name">📈 成長策略師</div>
+        </div>
+      </div>
+      <div class="point" style="margin-top:10px;">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          專案指令：<span class="cmd">/save-to-notion</span> 直接將內容存入 Notion
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 English Learning -->
+  <div class="section">
+    <div class="section-header">
+      <div class="sec-num">05</div>
+      <div class="sec-emoji">📖</div>
+      <div class="sec-title">個人成長場景 — English Learning</div>
+      <div class="sec-tag">學習工具化</div>
+    </div>
+    <div class="section-body">
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          <strong>CLAUDE.md 定義 AI 家教行為規則</strong>：繁中解說、英文出題、主動糾錯、IPA 音標格式⋯⋯不用每次重新說明
+        </div>
+      </div>
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          <strong>雙模式切換</strong>：說「工具模式」切到開發助手，說「學習模式」切回家教——用關鍵字控制 Claude 的人格
+        </div>
+      </div>
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          專案指令：<span class="cmd">/quiz</span> 自動出題 · <span class="cmd">/grade</span> 批改作答
+        </div>
+      </div>
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          <strong>Firebase 部署</strong>：學習 tracker 是真實 Web App，掛在線上可以跨裝置存取
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 Job Hunt -->
+  <div class="section">
+    <div class="section-header">
+      <div class="sec-num">06</div>
+      <div class="sec-emoji">💼</div>
+      <div class="sec-title">求職場景 — Job Hunt 2026</div>
+      <div class="sec-tag">特定目標作戰室</div>
+    </div>
+    <div class="section-body">
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          <strong>履歷版本管理規則</strong>：CLAUDE.md 規定「逐版留存、不直接覆蓋」，讓 Claude 像版控工具一樣管理履歷迭代
+        </div>
+      </div>
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          <strong>i18n 更新流程</strong>：先改 TW 版，改完主動詢問「CN / EN 要一起更新嗎？」確認才同步——防止意外改動
+        </div>
+      </div>
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          <strong>核心亮點強制置頂</strong>：CLAUDE.md 定義「量化成果優先、避免空洞描述」，任何履歷修改都自動套用
+        </div>
+      </div>
+      <div class="callout">
+        💡 一個專案 = 一個任務情境。開啟資料夾，Claude 就自動進入對應模式，不用每次重新說明背景。
+      </div>
+    </div>
+  </div>
+
+  <!-- 07 My Planner -->
+  <div class="section">
+    <div class="section-header">
+      <div class="sec-num">07</div>
+      <div class="sec-emoji">📱</div>
+      <div class="sec-title">工具開發場景 — My Planner</div>
+      <div class="sec-tag">用 AI 做 App</div>
+    </div>
+    <div class="section-body">
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          <strong>設計截圖驅動開發</strong>：把 Tiimo App 截圖放進專案資料夾，CLAUDE.md 定義像素級還原規則——Claude 直接對齊設計語言
+        </div>
+      </div>
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          <strong>Agent 角色分工</strong>：CLAUDE.md 裡定義 UI/UX 設計師（負責視覺）和前端架構師（負責功能），兩個角色各司其職
+        </div>
+      </div>
+      <div class="point">
+        <div class="point-dot"></div>
+        <div class="point-text">
+          <strong>輸出：PWA</strong>——單一 HTML 檔案，可以「加入主畫面」像 App 一樣打開，沒有工程背景也能做到
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Vanessa · Claude Code · 2026</div>
+
+</div>
+</body>
+</html>

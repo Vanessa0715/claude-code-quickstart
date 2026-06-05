@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude.ai Skills vs Claude Code Commands</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f5f0eb; font-family: 'Georgia', 'Noto Serif TC', serif; color: #3d2e1e; min-height: 100vh; padding: 40px 16px 64px; }
+  .container { max-width: 860px; margin: 0 auto; }
+
+  h1 { text-align: center; font-size: 1.4rem; color: #8b7355; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .subtitle { text-align: center; font-size: 0.85rem; color: #9e8a72; margin-bottom: 40px; font-family: 'Courier New', monospace; }
+
+  .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+
+  .col-header { text-align: center; padding: 14px 20px; border-radius: 10px 10px 0 0; font-size: 1rem; font-weight: bold; letter-spacing: 0.04em; }
+  .col-header.claude-ai { background: #5b6fb5; color: #fff; }
+  .col-header.claude-code { background: #8b7355; color: #fff; }
+
+  .col-body { background: #fff8f2; border: 1px solid #e0d4c4; border-top: none; border-radius: 0 0 10px 10px; padding: 0; overflow: hidden; }
+
+  .layer { padding: 14px 18px; border-bottom: 1px solid #ede4d8; }
+  .layer:last-child { border-bottom: none; }
+  .layer-label { font-size: 0.68rem; font-family: 'Courier New', monospace; letter-spacing: 0.12em; color: #b09a7e; margin-bottom: 6px; text-transform: uppercase; }
+  .layer-content { font-size: 0.88rem; color: #3d2e1e; line-height: 1.6; }
+  .layer-content .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-family: 'Courier New', monospace; margin: 2px 2px 2px 0; }
+  .tag-blue { background: #dde3f5; color: #3a4a8a; }
+  .tag-brown { background: #e8ddd0; color: #6b4f2e; }
+  .tag-green { background: #d4edda; color: #2d6a4f; }
+  .tag-orange { background: #fef3e2; color: #92610a; }
+  .tag-gray { background: #ede8e2; color: #6b5b4e; }
+
+  .trigger-row { display: flex; align-items: flex-start; gap: 10px; margin-top: 8px; }
+  .trigger-arrow { font-size: 1.1rem; color: #c9b99a; margin-top: 2px; flex-shrink: 0; }
+
+  .flow-section { margin-bottom: 40px; }
+  .flow-title { font-size: 0.78rem; font-family: 'Courier New', monospace; letter-spacing: 0.15em; color: #b09a7e; border-bottom: 1px solid #d8ccbe; padding-bottom: 6px; margin-bottom: 20px; }
+
+  .flow-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+  .flow-box { background: #fff8f2; border: 1px solid #e0d4c4; border-radius: 10px; padding: 18px; }
+  .flow-box h3 { font-size: 0.82rem; font-family: 'Courier New', monospace; letter-spacing: 0.08em; margin-bottom: 14px; }
+  .flow-box h3.blue { color: #5b6fb5; }
+  .flow-box h3.brown { color: #8b7355; }
+
+  .step { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+  .step-num { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-family: 'Courier New', monospace; font-weight: bold; flex-shrink: 0; margin-top: 1px; }
+  .step-num.blue { background: #dde3f5; color: #3a4a8a; }
+  .step-num.brown { background: #e8ddd0; color: #6b4f2e; }
+  .step-text { font-size: 0.83rem; color: #3d2e1e; line-height: 1.55; }
+  .step-sub { font-size: 0.75rem; color: #9e8a72; margin-top: 2px; font-family: 'Courier New', monospace; }
+
+  .step-connector { text-align: center; color: #c9b99a; font-size: 1rem; margin: 2px 0 2px 30px; }
+
+  .compare-table { width: 100%; border-collapse: collapse; background: #fff8f2; border-radius: 10px; overflow: hidden; border: 1px solid #e0d4c4; }
+  .compare-table th { padding: 12px 16px; font-size: 0.78rem; font-family: 'Courier New', monospace; letter-spacing: 0.06em; font-weight: bold; text-align: left; }
+  .compare-table th:first-child { background: #ede8e2; color: #6b5b4e; width: 28%; }
+  .compare-table th.blue { background: #5b6fb5; color: #fff; }
+  .compare-table th.brown { background: #8b7355; color: #fff; }
+  .compare-table td { padding: 11px 16px; font-size: 0.83rem; border-top: 1px solid #ede4d8; vertical-align: top; line-height: 1.5; }
+  .compare-table td:first-child { color: #8b7355; font-weight: bold; font-size: 0.78rem; font-family: 'Courier New', monospace; background: #faf6f1; }
+  .compare-table tr:hover td { background: #fdf9f5; }
+  .compare-table tr:hover td:first-child { background: #f5f0eb; }
+
+  .yes { color: #2d6a4f; font-weight: bold; }
+  .no { color: #c0392b; }
+  .partial { color: #92610a; font-weight: bold; }
+  .note { color: #8b7355; font-style: italic; font-size: 0.78rem; }
+
+  .verdict { background: #fff8f2; border: 2px solid #c9b99a; border-radius: 12px; padding: 22px 26px; margin-top: 8px; }
+  .verdict-title { font-size: 0.78rem; font-family: 'Courier New', monospace; letter-spacing: 0.12em; color: #b09a7e; margin-bottom: 12px; }
+  .verdict-text { font-size: 0.9rem; line-height: 1.7; color: #3d2e1e; }
+  .verdict-text strong { color: #8b7355; }
+  .verdict-row { display: flex; gap: 12px; margin-top: 12px; }
+  .verdict-col { flex: 1; background: #f5f0eb; border-radius: 8px; padding: 14px 16px; font-size: 0.83rem; line-height: 1.6; }
+  .verdict-col-title { font-size: 0.72rem; font-family: 'Courier New', monospace; letter-spacing: 0.1em; color: #b09a7e; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>Claude.ai Skills vs Claude Code Commands</h1>
+  <p class="subtitle">── 架構比較 ──</p>
+
+  <div class="columns">
+
+    <div>
+      <div class="col-header claude-ai">Claude.ai Skills / Plugins</div>
+      <div class="col-body">
+
+        <div class="layer">
+          <div class="layer-label">管理介面</div>
+          <div class="layer-content">平台 UI（設定 → Skills）<br><span class="tag tag-blue">視覺化管理</span> <span class="tag tag-blue">無需編輯檔案</span></div>
+        </div>
+
+        <div class="layer">
+          <div class="layer-label">作用範圍</div>
+          <div class="layer-content"><span class="tag tag-green">跨 project</span> <span class="tag tag-green">跨對話</span><br><span style="font-size:0.8rem;color:#9e8a72">帳號層級，所有專案都能使用</span></div>
+        </div>
+
+        <div class="layer">
+          <div class="layer-label">外部整合</div>
+          <div class="layer-content">部分 Plugin 提供 OAuth 流程<br>平台代為處理驗證，授權一次即用<br><span class="tag tag-blue">Zapier</span> <span class="tag tag-blue">GitHub</span> <span class="tag tag-blue">Google</span></div>
+        </div>
+
+        <div class="layer">
+          <div class="layer-label">觸發方式</div>
+          <div class="layer-content">
+            <div class="trigger-row"><span class="trigger-arrow">▸</span><span>輸入 <code>/skill名稱</code></span></div>
+            <div class="trigger-row"><span class="trigger-arrow">▸</span><span>平台在輸入指令當下將 skill prompt 注入對話</span></div>
+          </div>
+        </div>
+
+        <div class="layer">
+          <div class="layer-label">本質</div>
+          <div class="layer-content">雲端管理的 prompt 範本<br>+ <strong>平台負責 OAuth 驗證流程</strong></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div>
+      <div class="col-header claude-code">Claude Code .claude/commands/*.md</div>
+      <div class="col-body">
+
+        <div class="layer">
+          <div class="layer-label">管理介面</div>
+          <div class="layer-content">直接編輯本地 .md 文字檔<br><span class="tag tag-brown">完全控制內容</span> <span class="tag tag-gray">無 UI</span></div>
+        </div>
+
+        <div class="layer">
+          <div class="layer-label">作用範圍</div>
+          <div class="layer-content">
+            <span class="tag tag-brown">預設：單一專案</span><br>
+            <span style="font-size:0.8rem;color:#3d2e1e">放在 <code>.claude/commands/</code>（專案內）→ 只有該專案能用</span><br><br>
+            <span class="tag tag-green">可擴展：跨所有專案</span><br>
+            <span style="font-size:0.8rem;color:#3d2e1e">改放 <code>~/.claude/commands/</code>（家目錄）→ 所有專案都能呼叫</span>
+          </div>
+        </div>
+
+        <div class="layer">
+          <div class="layer-label">外部整合</div>
+          <div class="layer-content">透過 MCP tool 呼叫外部服務<br>auth 需自行設定（一次，存於本機）<br><span class="tag tag-brown">Firebase</span> <span class="tag tag-brown">Bash</span> <span class="tag tag-brown">任何 MCP</span></div>
+        </div>
+
+        <div class="layer">
+          <div class="layer-label">觸發方式</div>
+          <div class="layer-content">
+            <div class="trigger-row"><span class="trigger-arrow">▸</span><span>輸入 <code>/指令名稱</code>（對應 .md 檔名）</span></div>
+            <div class="trigger-row"><span class="trigger-arrow">▸</span><span>Claude Code 讀取 .md 檔，整個內容成為當次對話的系統指令</span></div>
+          </div>
+        </div>
+
+        <div class="layer">
+          <div class="layer-label">本質</div>
+          <div class="layer-content">本地 Markdown 提示詞 + MCP 工具呼叫<br><strong>同樣能整合外部 API</strong>，auth 自行管理（一次設定）</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-section">
+    <div class="flow-title">━━ 觸發流程對比 ━━</div>
+    <div class="flow-columns">
+
+      <div class="flow-box">
+        <h3 class="blue">Claude.ai — 輸入 /deploy</h3>
+        <div class="step"><div class="step-num blue">1</div><div class="step-text">你輸入 <code>/deploy</code><div class="step-sub">claude.ai 網頁介面</div></div></div>
+        <div class="step-connector">↓</div>
+        <div class="step"><div class="step-num blue">2</div><div class="step-text">平台查詢你帳號設定的 Skills<div class="step-sub">雲端查找</div></div></div>
+        <div class="step-connector">↓</div>
+        <div class="step"><div class="step-num blue">3</div><div class="step-text">找到對應 skill → 將 skill prompt 注入對話<div class="step-sub">輸入指令當下注入</div></div></div>
+        <div class="step-connector">↓</div>
+        <div class="step"><div class="step-num blue">4</div><div class="step-text">Claude 依 skill 指示執行</div></div>
+      </div>
+
+      <div class="flow-box">
+        <h3 class="brown">Claude Code（VS Code）— 輸入 /deploy</h3>
+        <div class="step"><div class="step-num brown">1</div><div class="step-text">你輸入 <code>/deploy</code><div class="step-sub">VS Code chat 介面</div></div></div>
+        <div class="step-connector">↓</div>
+        <div class="step"><div class="step-num brown">2</div><div class="step-text">Claude Code 讀取本地檔案<div class="step-sub">.claude/commands/deploy.md</div></div></div>
+        <div class="step-connector">↓</div>
+        <div class="step"><div class="step-num brown">3</div><div class="step-text">將 .md 內容注入為系統指令<div class="step-sub">每次觸發都重新讀取檔案</div></div></div>
+        <div class="step-connector">↓</div>
+        <div class="step"><div class="step-num brown">4</div><div class="step-text">Claude 依 .md 指示執行</div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="flow-section">
+    <div class="flow-title">━━ 功能比較表 ━━</div>
+    <table class="compare-table">
+      <tr>
+        <th>功能</th>
+        <th class="blue">Claude.ai Skills</th>
+        <th class="brown">Claude Code Commands</th>
+      </tr>
+      <tr>
+        <td>執行效果</td>
+        <td><span class="yes">✓</span> prompt 注入，Claude 執行</td>
+        <td><span class="yes">✓</span> 完全相同</td>
+      </tr>
+      <tr>
+        <td>跨 project</td>
+        <td><span class="yes">✓</span> 帳號層級，預設跨所有專案</td>
+        <td><span class="partial">△</span> 預設單一專案；移至 <code>~/.claude/commands/</code> 即可跨專案</td>
+      </tr>
+      <tr>
+        <td>跨裝置</td>
+        <td><span class="yes">✓</span> 雲端同步，任何裝置都能用</td>
+        <td><span class="partial">△</span> 本地檔案；可用 git / dotfiles 同步</td>
+      </tr>
+      <tr>
+        <td>外部 API</td>
+        <td><span class="yes">✓</span> 部分 Plugin 有 OAuth，平台代管</td>
+        <td><span class="yes">✓</span> 透過 MCP 達到同等效果，auth 自行設定一次</td>
+      </tr>
+      <tr>
+        <td>本地工具存取</td>
+        <td><span class="no">✗</span> 無法讀寫本機檔案、執行 Bash</td>
+        <td><span class="yes">✓</span> 可直接操作本地檔案、終端機、系統工具</td>
+      </tr>
+      <tr>
+        <td>管理方式</td>
+        <td>平台 UI，視覺化操作</td>
+        <td>直接編輯 .md 檔，改完立即生效</td>
+      </tr>
+      <tr>
+        <td>版本控制</td>
+        <td><span class="no">✗</span> 無 git 整合，無歷史紀錄</td>
+        <td><span class="yes">✓</span> 純文字檔，可用 git 追蹤每次修改</td>
+      </tr>
+      <tr>
+        <td>適合場景</td>
+        <td>輕量使用、需要 OAuth 整合、多裝置共享</td>
+        <td>深度客製化、需存取本地工具、版本追蹤</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="verdict">
+    <div class="verdict-title">━━ 怎麼選 ━━</div>
+    <div class="verdict-text">
+      兩者<strong>執行效果完全相同</strong>：輸入指令後，Claude 都是把對應的 prompt 載入並執行。<br>
+      最關鍵的實際差異只有兩點：
+    </div>
+    <div class="verdict-row">
+      <div class="verdict-col">
+        <div class="verdict-col-title">選 Claude.ai Skills 如果你需要⋯</div>
+        · 在多台裝置、多個專案共用同一組指令<br>
+        · OAuth 驗證由平台幫你管（不想自己設定）<br>
+        · 簡單場景，不需要讀寫本地檔案
+      </div>
+      <div class="verdict-col">
+        <div class="verdict-col-title">選 Claude Code Commands 如果你需要⋯</div>
+        · 讀寫本地檔案、執行 Bash 指令<br>
+        · 精細控制指令內容，隨時修改調整<br>
+        · 用 git 追蹤 SOP 的歷史變更
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
